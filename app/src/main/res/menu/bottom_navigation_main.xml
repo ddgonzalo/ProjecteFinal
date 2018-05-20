@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_inici"
+        android:enabled="true"
+        android:icon="@drawable/ic_menu_inici"
+        android:title="@string/inici"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_agenda"
+        android:enabled="true"
+        android:icon="@drawable/ic_menu_agenda"
+        android:title="@string/agenda"
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/action_disponibilitat"
+        android:enabled="true"
+        android:icon="@drawable/ic_menu_disponibilitat"
+        android:title="@string/disponibilitat"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_inventari"
+        android:enabled="true"
+        android:icon="@drawable/ic_menu_inventari"
+        android:title="@string/inventari"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_settings"
+        android:enabled="true"
+        android:icon="@drawable/ic_menu_configuracio"
+        android:title="@string/configuracio"
+        app:showAsAction="ifRoom" />
+</menu>
