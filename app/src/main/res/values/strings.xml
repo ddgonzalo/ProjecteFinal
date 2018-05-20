@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">ProjecteFinal</string>
+    <string name="inici">Inici</string>
+    <string name="agenda">Agenda</string>
+    <string name="disponibilitat">Disponibilitat</string>
+    <string name="inventari">Inventari</string>
+    <string name="configuracio">Configuració</string>
+</resources>

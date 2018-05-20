@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/constraintLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="4dp">
+
+    <ImageView
+        android:id="@+id/cercle"
+        android:layout_width="10dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/hora"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/cercle" />
+
+    <TextView
+        android:id="@+id/hora"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:textColor="@color/gris"
+        android:textSize="18sp"
+        app:layout_constraintStart_toEndOf="@+id/cercle"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="08:30." />
+
+    <TextView
+        android:id="@+id/recordatori"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:textColor="@color/negre"
+        android:textSize="18sp"
+        app:layout_constraintStart_toEndOf="@+id/hora"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Titol del recordatori" />
+</android.support.constraint.ConstraintLayout>
