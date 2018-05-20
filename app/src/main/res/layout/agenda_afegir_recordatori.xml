@@ -6,6 +6,111 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/contenidorUbicacio"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:clickable="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/contenidorDataHora">
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:drawablePadding="4dp"
+            android:drawableStart="@drawable/ic_location"
+            android:gravity="center"
+            android:text="Ubicació"
+            android:textColor="@color/negre"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <AutoCompleteTextView
+            android:id="@+id/autoCompleteTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:completionHint="Ubicació"
+            android:drawableEnd="@drawable/ic_endavant"
+            android:drawablePadding="4dp"
+            android:gravity="right"
+            android:text="A la botiga"
+            android:textColor="@color/gris"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/textView4"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/contenidorDataHora"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:clickable="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/concepte">
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawablePadding="4dp"
+            android:drawableStart="@drawable/ic_rellotge"
+            android:gravity="center_vertical"
+            android:text="Data i hora"
+            android:textColor="@color/negre"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/dataRecordatori"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            android:layout_marginTop="4dp"
+            android:text="Avui"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toStartOf="@+id/textView9"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textView9"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            android:layout_marginTop="4dp"
+            android:text="a les"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toStartOf="@+id/horaRecordatori"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/horaRecordatori"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="00:00"
+            android:textSize="16sp"
+            android:drawableEnd="@drawable/ic_endavant"
+            android:drawablePadding="4dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+    </android.support.constraint.ConstraintLayout>
+
     <ImageButton
         android:id="@+id/tornar_enrere"
         android:layout_width="40dp"
@@ -15,7 +120,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/titol"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/titol"
-        app:srcCompat="@drawable/ic_enrere" />
+        app:srcCompat="@drawable/ic_enrere"/>
 
     <TextView
         android:id="@+id/titol"
@@ -28,7 +133,7 @@
         android:textSize="30sp"
         android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@+id/tornar_enrere"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <LinearLayout
         android:id="@+id/separador"
@@ -40,9 +145,9 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/titol"></LinearLayout>
+        app:layout_constraintTop_toBottomOf="@+id/titol"/>
 
-    <EditText
+    <com.rengwuxian.materialedittext.MaterialEditText
         android:id="@+id/concepte"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -52,20 +157,43 @@
         android:ems="10"
         android:hint="Títol recordatori..."
         android:inputType="textPersonName"
-        android:textSize="20sp"
+        android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/separador" />
+        app:layout_constraintTop_toBottomOf="@+id/separador"
+        app:met_maxCharacters="30" />
+
+    <com.rengwuxian.materialedittext.MaterialEditText
+        android:id="@+id/text"
+        android:layout_width="0dp"
+        android:layout_height="172dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:ems="10"
+        android:gravity="top"
+        android:hint="Escriu aquí el recordatori..."
+        android:inputType="textMultiLine|textPersonName"
+        android:singleLine="false"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:met_hideUnderline="true" />
 
     <TextView
-        android:id="@+id/data"
+        android:id="@+id/guardarRecordatori"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:drawablePadding="4dp"
-        android:drawableStart="@drawable/ic_rellotge"
-        android:gravity="center_vertical"
-        android:text="TextView"
-        tools:layout_editor_absoluteX="16dp"
-        tools:layout_editor_absoluteY="154dp" />
+        android:layout_height="0dp"
+        android:layout_marginEnd="8dp"
+        android:clickable="true"
+        android:gravity="center"
+        android:text="Guardar"
+        android:textColor="@color/negre"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/titol"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/titol" />
 
 </android.support.constraint.ConstraintLayout>

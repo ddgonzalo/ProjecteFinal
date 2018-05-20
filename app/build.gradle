@@ -34,5 +34,11 @@ dependencies {
 
     implementation 'com.github.ittianyu:BottomNavigationViewEx:1.2.4'
 
+    implementation 'com.rengwuxian.materialedittext:library:2.1.4'
+
+    implementation 'com.wdullaer:materialdatetimepicker:3.6.0'
+
+    implementation 'com.google.android.gms:play-services-places:10.2.1'
+
 
 }

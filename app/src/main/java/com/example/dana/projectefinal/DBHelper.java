@@ -39,7 +39,7 @@ public class DBHelper {
     Context context;
 
     //URLs
-    final String SERVIDOR = "http://192.168.1.11/ebicimoto/";
+    final String SERVIDOR = "http://192.168.1.14/";
     final String URL_AGENDA = SERVIDOR + "agenda.php";
 
 
@@ -51,7 +51,6 @@ public class DBHelper {
 
 
     public void carregarAgendaAvui(final LinearLayout llistaRecordatoris) {
-        Log.i("VOLLEYPLS",URL_AGENDA + "?avui=1");
         JsonArrayRequest jsonRequest = new JsonArrayRequest(Request.Method.GET, URL_AGENDA + "?avui=1", null,
                 new Response.Listener<JSONArray>() {
                     @Override
@@ -95,7 +94,6 @@ public class DBHelper {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.i("VOLLEYPLS", "RESPONSE ERROR");
                         error.printStackTrace();
                     }
                 });
