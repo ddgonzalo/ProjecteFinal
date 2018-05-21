@@ -19,58 +19,43 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         BottomNavigationViewEx bottomNavigation = (BottomNavigationViewEx) findViewById(R.id.bnve);
 
-        //atributs perquè només es vegi el text en l'item seleccionat
+        //atributs perquè només es vegi el text en l'item del menú seleccionat
         bottomNavigation.enableShiftingMode(false);
         bottomNavigation.enableItemShiftingMode(true);
         bottomNavigation.enableAnimation(true);
 
         bottomNavigation.setOnNavigationItemSelectedListener(this);
 
-        //------------------------------------------------------------------------------------------
-
+        //comença mostrant la pantalla d'inici
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.frameLayout, new FragmentInici())
                 .commit();
 
-        /*bottomNavigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.action_inici: break;
-
-                    case R.id.action_agenda: break;
-
-                    case R.id.action_disponibilitat: break;
-
-                    case R.id.action_inventari: break;
-
-                    case R.id.action_settings: break;
-
-                }
-                return true;
-            }
-        });*/
-
     }
 
+//-- fi onCreate() ---------------------------------------------------------------------------------
+
     @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+    public boolean onNavigationItemSelected(MenuItem item) {
+
         Fragment fragment = null;
+
         switch (item.getItemId()) {
-            case R.id.action_inici: fragment = new FragmentInici(); Log.i("BOTTOMNAV", "Inici"); break;
+            case R.id.action_inici: fragment = new FragmentInici(); break;
 
-            case R.id.action_agenda: fragment = new FragmentAgenda(); Log.i("BOTTOMNAV", "Agenda"); break;
+            case R.id.action_agenda: fragment = new FragmentAgenda(); break;
 
-            case R.id.action_disponibilitat: fragment = new FragmentDisponibilitat(); Log.i("BOTTOMNAV", "Disponibilitat"); break;
+            case R.id.action_disponibilitat: fragment = new FragmentDisponibilitat(); break;
 
-            case R.id.action_inventari: fragment = new FragmentInventari(); Log.i("BOTTOMNAV", "Inventari"); break;
+            case R.id.action_inventari: fragment = new FragmentInventari();  break;
 
-            case R.id.action_settings: fragment = new FragmentSettings(); Log.i("BOTTOMNAV", "Settings"); break;
+            case R.id.action_settings: fragment = new FragmentSettings(); break;
         }
 
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.frameLayout, fragment)
                 .commit();
+
         return true;
     }
 }

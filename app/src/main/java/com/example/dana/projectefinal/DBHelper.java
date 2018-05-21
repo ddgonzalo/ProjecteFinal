@@ -39,7 +39,7 @@ public class DBHelper {
     Context context;
 
     //URLs
-    final String SERVIDOR = "http://192.168.1.14/";
+    final String SERVIDOR = "http://192.168.1.178/";
     final String URL_AGENDA = SERVIDOR + "agenda.php";
 
 

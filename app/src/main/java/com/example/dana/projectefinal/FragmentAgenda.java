@@ -11,6 +11,7 @@ public class FragmentAgenda extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
         View view = inflater.inflate(R.layout.agenda, null);
 
         ImageButton btAfegirRecordatori = view.findViewById(R.id.afegir_recordatori);
@@ -24,6 +25,7 @@ public class FragmentAgenda extends Fragment {
                         .commit();
             }
         });
+
         return view;
     }
 }

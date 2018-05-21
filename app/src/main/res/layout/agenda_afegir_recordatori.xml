@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -25,10 +24,11 @@
             android:clickable="true"
             android:drawablePadding="4dp"
             android:drawableStart="@drawable/ic_location"
+            android:fontFamily="@font/sf_pro_display_light"
             android:gravity="center"
             android:text="Ubicació"
             android:textColor="@color/negre"
-            android:textSize="16sp"
+            android:textSize="17sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -36,14 +36,16 @@
             android:id="@+id/autoCompleteTextView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
             android:background="@android:color/transparent"
             android:completionHint="Ubicació"
             android:drawableEnd="@drawable/ic_endavant"
             android:drawablePadding="4dp"
+            android:fontFamily="@font/sf_pro_display_light"
             android:gravity="right"
             android:text="A la botiga"
             android:textColor="@color/gris"
-            android:textSize="16sp"
+            android:textSize="17sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/textView4"
             app:layout_constraintTop_toTopOf="parent" />
@@ -56,6 +58,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
         android:clickable="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
@@ -68,10 +71,11 @@
             android:layout_height="wrap_content"
             android:drawablePadding="4dp"
             android:drawableStart="@drawable/ic_rellotge"
+            android:fontFamily="@font/sf_pro_display_light"
             android:gravity="center_vertical"
             android:text="Data i hora"
             android:textColor="@color/negre"
-            android:textSize="16sp"
+            android:textSize="17sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -82,8 +86,10 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="4dp"
             android:layout_marginTop="4dp"
+            android:fontFamily="@font/sf_pro_display_light"
             android:text="Avui"
-            android:textSize="16sp"
+            android:textColor="@color/gris"
+            android:textSize="17sp"
             app:layout_constraintEnd_toStartOf="@+id/textView9"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -93,8 +99,10 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="4dp"
             android:layout_marginTop="4dp"
+            android:fontFamily="@font/sf_pro_display_light"
             android:text="a les"
-            android:textSize="16sp"
+            android:textColor="@color/gris"
+            android:textSize="17sp"
             app:layout_constraintEnd_toStartOf="@+id/horaRecordatori"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -103,12 +111,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="00:00"
-            android:textSize="16sp"
             android:drawableEnd="@drawable/ic_endavant"
             android:drawablePadding="4dp"
+            android:fontFamily="@font/sf_pro_display_light"
+            android:text="00:00"
+            android:textColor="@color/gris"
+            android:textSize="17sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent" />
     </android.support.constraint.ConstraintLayout>
 
     <ImageButton
@@ -120,7 +130,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/titol"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/titol"
-        app:srcCompat="@drawable/ic_enrere"/>
+        app:srcCompat="@drawable/ic_enrere" />
 
     <TextView
         android:id="@+id/titol"
@@ -128,12 +138,13 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
         android:layout_marginTop="8dp"
+        android:fontFamily="@font/sf_pro_display_bold"
         android:text="Nou recordatori"
         android:textColor="@android:color/black"
-        android:textSize="30sp"
+        android:textSize="34sp"
         android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@+id/tornar_enrere"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
         android:id="@+id/separador"
@@ -145,7 +156,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/titol"/>
+        app:layout_constraintTop_toBottomOf="@+id/titol" />
 
     <com.rengwuxian.materialedittext.MaterialEditText
         android:id="@+id/concepte"
@@ -155,9 +166,10 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="32dp"
         android:ems="10"
+        android:fontFamily="@font/sf_pro_text_medium"
         android:hint="Títol recordatori..."
         android:inputType="textPersonName"
-        android:textSize="24sp"
+        android:textSize="22sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/separador"
@@ -166,11 +178,13 @@
     <com.rengwuxian.materialedittext.MaterialEditText
         android:id="@+id/text"
         android:layout_width="0dp"
-        android:layout_height="172dp"
+        android:layout_height="0dp"
         android:layout_marginBottom="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
+        android:layout_marginTop="24dp"
         android:ems="10"
+        android:fontFamily="@font/sf_pro_text_regular"
         android:gravity="top"
         android:hint="Escriu aquí el recordatori..."
         android:inputType="textMultiLine|textPersonName"
@@ -180,6 +194,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/contenidorUbicacio"
         app:met_hideUnderline="true" />
 
     <TextView
@@ -188,9 +203,11 @@
         android:layout_height="0dp"
         android:layout_marginEnd="8dp"
         android:clickable="true"
+        android:fontFamily="@font/sf_pro_text_bold"
         android:gravity="center"
         android:text="Guardar"
         android:textColor="@color/negre"
+        android:textSize="17sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/titol"
         app:layout_constraintEnd_toEndOf="parent"

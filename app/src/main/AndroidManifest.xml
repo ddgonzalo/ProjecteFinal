@@ -14,6 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar"> <!-- Sense barra d'estat -->
 
+        <!-- Per Google Places API -->
         <meta-data
         android:name="com.google.android.geo.API_KEY"
         android:value="AIzaSyCtFCeBJVSH74RdlTVB3qGP65iK-w6oNLU"/>

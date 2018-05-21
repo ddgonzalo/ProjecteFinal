@@ -123,10 +123,10 @@ public class PlaceArrayAdapter extends ArrayAdapter<PlaceArrayAdapter.PlaceAutoc
             @Override
             protected void publishResults(CharSequence constraint, FilterResults results) {
                 if (results != null && results.count > 0) {
-                    // The API returned at least one result, update the data.
+                    // The API returned at least one result, update the tvData.
                     notifyDataSetChanged();
                 } else {
-                    // The API did not return any results, invalidate the data set.
+                    // The API did not return any results, invalidate the tvData set.
                     notifyDataSetInvalidated();
                 }
             }
