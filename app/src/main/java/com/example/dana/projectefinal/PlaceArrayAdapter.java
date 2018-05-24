@@ -21,7 +21,6 @@ import java.util.concurrent.TimeUnit;
 
 public class PlaceArrayAdapter extends ArrayAdapter<PlaceArrayAdapter.PlaceAutocomplete> implements Filterable {
 
-    private static final String TAG = "PlaceArrayAdapter";
     private GoogleApiClient mGoogleApiClient;
     private AutocompleteFilter mPlaceFilter;
     private LatLngBounds mBounds;
@@ -65,25 +64,21 @@ public class PlaceArrayAdapter extends ArrayAdapter<PlaceArrayAdapter.PlaceAutoc
 
 
     private ArrayList<PlaceAutocomplete> getPredictions(CharSequence constraint) {
+
         if (mGoogleApiClient != null) {
-            Log.i(TAG, "Executing autocomplete query for: " + constraint);
-            PendingResult<AutocompletePredictionBuffer> results =
-                    Places.GeoDataApi
-                            .getAutocompletePredictions(mGoogleApiClient, constraint.toString(),
-                                    mBounds, mPlaceFilter);
+
+            PendingResult<AutocompletePredictionBuffer> results = Places.GeoDataApi
+                            .getAutocompletePredictions(mGoogleApiClient, constraint.toString(), mBounds, mPlaceFilter);
+
             // Wait for predictions, set the timeout.
-            AutocompletePredictionBuffer autocompletePredictions = results
-                    .await(60, TimeUnit.SECONDS);
+            AutocompletePredictionBuffer autocompletePredictions = results.await(60, TimeUnit.SECONDS);
             final Status status = autocompletePredictions.getStatus();
+
             if (!status.isSuccess()) {
-                Log.e(TAG, "Error getting place predictions: " + status
-                        .toString());
                 autocompletePredictions.release();
                 return null;
             }
 
-            Log.i(TAG, "Query completed. Received " + autocompletePredictions.getCount()
-                    + " predictions.");
             Iterator<AutocompletePrediction> iterator = autocompletePredictions.iterator();
 
             ArrayList resultList = new ArrayList<>(autocompletePredictions.getCount());
@@ -93,26 +88,29 @@ public class PlaceArrayAdapter extends ArrayAdapter<PlaceArrayAdapter.PlaceAutoc
                 AutocompletePrediction prediction = iterator.next();
                 resultList.add(new PlaceAutocomplete(prediction.getPlaceId(), prediction.getFullText(null)));
             }
+
             // Buffer release
             autocompletePredictions.release();
             return resultList;
         }
 
-        Log.e(TAG, "Google API client is not connected.");
         return null;
     }
+
 
     @Override
     public Filter getFilter() {
         Filter filter = new Filter() {
+
             @Override
             protected FilterResults performFiltering(CharSequence constraint) {
                 FilterResults results = new FilterResults();
+
                 if (constraint != null) {
                     // Query the autocomplete API for the entered constraint
                     mResultList = getPredictions(constraint);
+
                     if (mResultList != null) {
-                        // Results
                         results.values = mResultList;
                         results.count = mResultList.size();
                     }
@@ -120,19 +118,20 @@ public class PlaceArrayAdapter extends ArrayAdapter<PlaceArrayAdapter.PlaceAutoc
                 return results;
             }
 
+
             @Override
             protected void publishResults(CharSequence constraint, FilterResults results) {
                 if (results != null && results.count > 0) {
-                    // The API returned at least one result, update the tvData.
-                    notifyDataSetChanged();
+                    notifyDataSetChanged(); // The API returned at least one result, update the tvData.
                 } else {
-                    // The API did not return any results, invalidate the tvData set.
-                    notifyDataSetInvalidated();
+                    notifyDataSetInvalidated(); // The API did not return any results, invalidate the tvData set.
                 }
             }
         };
+
         return filter;
     }
+
 
     class PlaceAutocomplete {
 

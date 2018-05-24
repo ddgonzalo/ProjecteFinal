@@ -9,17 +9,17 @@ import android.widget.LinearLayout;
 
 public class FragmentInici extends Fragment {
 
-    DBHelper bd;
+    ConnexioAgenda bd;
     LinearLayout llistaAgenda;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.inici, null);
-        bd = new DBHelper(getContext());
+        bd = new ConnexioAgenda(getContext());
 
-        llistaAgenda = view.findViewById(R.id.llistaAgendaAvui);
+        llistaAgenda = view.findViewById(R.id.llista_agenda_avui);
 
-        bd.carregarAgendaAvui(llistaAgenda);
+        bd.mostrarRecordatoris("avui", llistaAgenda);
 
         return view;
     }

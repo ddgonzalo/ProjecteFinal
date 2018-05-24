@@ -1,10 +1,33 @@
-<?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/linearLayout3"
     android:layout_width="250dp"
     android:layout_height="wrap_content"
     android:background="@drawable/fons_popup">
+
+    <!--<eightbitlab.com.blurview.BlurView
+        android:id="@+id/blurView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:blurOverlayColor="@color/grisClar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:id="@+id/fons"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"></LinearLayout>
+
+    </eightbitlab.com.blurview.BlurView>-->
+
 
     <TextView
         android:id="@+id/titol"
@@ -30,7 +53,7 @@
         android:gravity="center"
         android:maxLines="2"
         android:singleLine="false"
-        android:text="Segur que vols tornar enrere?"
+        android:text="No s'ha pogut guardar el recordatori,"
         android:textColor="@color/negre"
         android:textSize="17sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -38,18 +61,18 @@
         app:layout_constraintTop_toBottomOf="@+id/titol" />
 
     <TextView
-        android:id="@+id/text2"
+        android:id="@+id/motiu_error"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
         android:fontFamily="@font/sf_pro_display_light"
-        android:text="Els canvis fets no es guardaran."
         android:textColor="@color/negre"
         android:textSize="17sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text1" />
+        app:layout_constraintTop_toBottomOf="@+id/text1"
+        tools:text="Motiu de l'error" />
 
     <Button
         android:id="@+id/acceptar"
@@ -61,20 +84,8 @@
         android:textSize="17sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/separador_vertical"
-        app:layout_constraintTop_toTopOf="@+id/separador_vertical" />
-
-    <Button
-        android:id="@+id/cancelar"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
-        android:fontFamily="@font/sf_pro_display_medium"
-        android:text="Cancelar"
-        android:textSize="17sp"
-        app:layout_constraintEnd_toStartOf="@+id/separador_vertical"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/separador_vertical" />
+        app:layout_constraintTop_toBottomOf="@+id/separador_horitzontal" />
 
     <LinearLayout
         android:id="@+id/separador_horitzontal"
@@ -85,19 +96,8 @@
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text2">
+        app:layout_constraintTop_toBottomOf="@+id/motiu_error">
 
     </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/separador_vertical"
-        android:layout_width="1dp"
-        android:layout_height="0dp"
-        android:background="@color/grisClar"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/separador_horitzontal"></LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

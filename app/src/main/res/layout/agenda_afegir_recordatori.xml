@@ -33,7 +33,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <AutoCompleteTextView
-            android:id="@+id/autoCompleteTextView"
+            android:id="@+id/ubicacio_recordatori"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -63,7 +63,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/concepte">
+        app:layout_constraintTop_toBottomOf="@+id/titol_recordatori">
 
         <TextView
             android:id="@+id/textView"
@@ -85,7 +85,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="4dp"
-            android:layout_marginTop="4dp"
             android:fontFamily="@font/sf_pro_display_light"
             android:text="Avui"
             android:textColor="@color/gris"
@@ -98,7 +97,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="4dp"
-            android:layout_marginTop="4dp"
             android:fontFamily="@font/sf_pro_display_light"
             android:text="a les"
             android:textColor="@color/gris"
@@ -110,7 +108,6 @@
             android:id="@+id/horaRecordatori"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
             android:drawableEnd="@drawable/ic_endavant"
             android:drawablePadding="4dp"
             android:fontFamily="@font/sf_pro_display_light"
@@ -121,16 +118,46 @@
             app:layout_constraintTop_toTopOf="parent" />
     </android.support.constraint.ConstraintLayout>
 
-    <ImageButton
-        android:id="@+id/tornar_enrere"
-        android:layout_width="40dp"
-        android:layout_height="0dp"
-        android:background="@android:color/transparent"
-        android:scaleType="fitXY"
-        app:layout_constraintBottom_toBottomOf="@+id/titol"
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/contenidorEtiqueta"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/titol"
-        app:srcCompat="@drawable/ic_enrere" />
+        app:layout_constraintTop_toBottomOf="@+id/contenidorUbicacio">
+
+        <TextView
+            android:id="@+id/etiqueta_text"
+            android:drawablePadding="4dp"
+            android:drawableStart="@drawable/ic_label_outline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/sf_pro_display_light"
+            android:text="Etiqueta"
+            android:textColor="@color/negre"
+            android:textSize="17sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/etiqueta_recordatori"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:drawableEnd="@drawable/ic_endavant"
+            android:drawablePadding="4dp"
+            android:fontFamily="@font/sf_pro_display_light"
+            android:gravity="right"
+            android:text="PERSONAL"
+            android:textColor="@color/gris"
+            android:textSize="17sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/etiqueta_text"
+            app:layout_constraintTop_toTopOf="parent" />
+    </android.support.constraint.ConstraintLayout>
 
     <TextView
         android:id="@+id/titol"
@@ -146,6 +173,17 @@
         app:layout_constraintStart_toEndOf="@+id/tornar_enrere"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <ImageButton
+        android:id="@+id/tornar_enrere"
+        android:layout_width="40dp"
+        android:layout_height="0dp"
+        android:background="@android:color/transparent"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toBottomOf="@+id/titol"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/titol"
+        app:srcCompat="@drawable/ic_enrere" />
+
     <LinearLayout
         android:id="@+id/separador"
         android:layout_width="match_parent"
@@ -159,7 +197,7 @@
         app:layout_constraintTop_toBottomOf="@+id/titol" />
 
     <com.rengwuxian.materialedittext.MaterialEditText
-        android:id="@+id/concepte"
+        android:id="@+id/titol_recordatori"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
@@ -175,33 +213,62 @@
         app:layout_constraintTop_toBottomOf="@+id/separador"
         app:met_maxCharacters="30" />
 
-    <com.rengwuxian.materialedittext.MaterialEditText
-        android:id="@+id/text"
-        android:layout_width="0dp"
+    <ViewSwitcher xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/my_switcher"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginBottom="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="24dp"
-        android:ems="10"
-        android:fontFamily="@font/sf_pro_text_regular"
-        android:gravity="top"
-        android:hint="Escriu aquí el recordatori..."
-        android:inputType="textMultiLine|textPersonName"
-        android:singleLine="false"
-        android:textSize="16sp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/contenidorUbicacio"
-        app:met_hideUnderline="true" />
+        app:layout_constraintTop_toBottomOf="@+id/contenidorEtiqueta">
 
-    <TextView
-        android:id="@+id/guardarRecordatori"
+        <com.rengwuxian.materialedittext.MaterialEditText
+            android:id="@+id/text"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="24dp"
+            android:ems="10"
+            android:fontFamily="@font/sf_pro_text_regular"
+            android:gravity="top"
+            android:hint="Escriu aquí el recordatori..."
+            android:inputType="textMultiLine|textPersonName"
+            android:singleLine="false"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/contenidorUbicacio"
+            app:met_hideUnderline="true" />
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/animation_view"
+            android:layout_width="match_parent"
+            android:layout_height="363dp"
+
+            app:lottie_autoPlay="false"
+
+            app:lottie_loop="false"
+            app:lottie_rawRes="@raw/success_animation" />
+
+
+    </ViewSwitcher>
+
+
+    <Button
+        android:id="@+id/guardar_recordatori"
+        style="@android:style/Widget.Button"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:layout_marginEnd="8dp"
+        android:background="@android:color/transparent"
         android:clickable="true"
         android:fontFamily="@font/sf_pro_text_bold"
         android:gravity="center"

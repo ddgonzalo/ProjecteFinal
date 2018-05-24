@@ -44,4 +44,63 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/titol"
         app:srcCompat="@drawable/creu_afegir" />
+
+    <FrameLayout
+        android:id="@+id/agenda_frame_layout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/radio_group">
+
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/imageButton"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:drawablePadding="4dp"
+        android:fontFamily="@font/sf_pro_display_medium"
+        android:gravity="center"
+        android:text="MOSTRAR PER"
+        android:textColor="@color/negre"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@+id/radio_group"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/separador" />
+
+    <RadioGroup
+        android:id="@+id/radio_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="4dp"
+        android:checkedButton="@+id/filtrar_per_data"
+        android:orientation="horizontal"
+        app:layout_constraintStart_toEndOf="@+id/imageButton"
+        app:layout_constraintTop_toBottomOf="@+id/separador">
+
+        <RadioButton
+            android:id="@+id/filtrar_per_data"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="@font/sf_pro_display_light"
+            android:text="Data"
+            android:textSize="12sp" />
+
+        <RadioButton
+            android:id="@+id/filtrar_per_etiquetes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="@font/sf_pro_display_light"
+            android:text="Categories"
+            android:textSize="12dp" />
+    </RadioGroup>
 </android.support.constraint.ConstraintLayout>
