@@ -1,4 +1,4 @@
-package com.example.dana.projectefinal;
+package com.example.dana.projectefinal.agenda;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -7,6 +7,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.example.dana.projectefinal.ConnexioDades;
+import com.example.dana.projectefinal.R;
 
 public class FragmentAgendaFiltrarEtiquetes extends Fragment{
 

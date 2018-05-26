@@ -28,7 +28,7 @@ import static com.android.volley.Request.*;
 
 public class ConnexioDades {
 
-    public static String SERVIDOR = "http://192.168.16.216/";
+    public static String SERVIDOR = "http://192.168.1.11/";
 
     private static RequestQueue queue;
 
@@ -42,6 +42,8 @@ public class ConnexioDades {
             queue = Volley.newRequestQueue(context);
             carregarEtiquetes();
             //carregarEstatsRecordatoris();
+            carregarBicicletes();
+            carregarScooters();
     }
 
 
@@ -60,7 +62,6 @@ public class ConnexioDades {
                                 llistaEtiquetes.put(jsonObject.getString("descripcio"), jsonObject.getString("color"));
                             } catch (Exception e) {
                                 e.printStackTrace();
-                                Log.i("volleypls", "catch! " + e.getMessage().toString());
 
                             }
                         }
@@ -71,7 +72,6 @@ public class ConnexioDades {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         error.printStackTrace();
-                        Log.i("volleypls", "responseerror " + error.getMessage().toString());
                     }
                 });
 
@@ -112,6 +112,64 @@ public class ConnexioDades {
             }
 
         };
+
+        queue.add(string_request);
+    }
+
+    private void carregarBicicletes() {
+        llistaBicicletes = new HashMap<>();
+
+        JsonArrayRequest string_request = new JsonArrayRequest(Method.GET, SERVIDOR + "bicicletes.php", null,
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+
+                        for (int i=0; i<response.length(); i++) {
+                            try {
+                                JSONObject jsonObject = response.getJSONObject(i);
+
+                                llistaBicicletes.put(jsonObject.getInt("id"), jsonObject.getString("marca") + " " + jsonObject.getString("model"));
+                            } catch (Exception ignored) {}
+                        }
+                    }
+                },
+
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        error.printStackTrace();
+                    }
+                }
+        );
+
+        queue.add(string_request);
+    }
+
+    private void carregarScooters() {
+        llistaScooters = new HashMap<>();
+
+        JsonArrayRequest string_request = new JsonArrayRequest(Method.GET, SERVIDOR + "scooters.php", null,
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+
+                        for (int i=0; i<response.length(); i++) {
+                            try {
+                                JSONObject jsonObject = response.getJSONObject(i);
+
+                                llistaScooters.put(jsonObject.getInt("id"), jsonObject.getString("marca") + " " + jsonObject.getString("model"));
+                            } catch (Exception ignored) {}
+                        }
+                    }
+                },
+
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        error.printStackTrace();
+                    }
+                }
+        );
 
         queue.add(string_request);
     }

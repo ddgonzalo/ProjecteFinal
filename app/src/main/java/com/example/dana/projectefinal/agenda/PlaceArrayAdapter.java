@@ -1,7 +1,6 @@
-package com.example.dana.projectefinal;
+package com.example.dana.projectefinal.agenda;
 
 import android.content.Context;
-import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;

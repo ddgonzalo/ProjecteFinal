@@ -1,4 +1,4 @@
-package com.example.dana.projectefinal;
+package com.example.dana.projectefinal.agenda;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -6,6 +6,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+
+import com.example.dana.projectefinal.R;
 
 public class FragmentAgendaFiltrarData extends Fragment {
 

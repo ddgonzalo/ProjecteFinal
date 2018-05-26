@@ -43,7 +43,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/text1"
+        android:id="@+id/primera_linia"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
@@ -61,7 +61,7 @@
         app:layout_constraintTop_toBottomOf="@+id/titol" />
 
     <TextView
-        android:id="@+id/motiu_error"
+        android:id="@+id/segona_linia"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
@@ -71,7 +71,7 @@
         android:textSize="17sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text1"
+        app:layout_constraintTop_toBottomOf="@+id/primera_linia"
         tools:text="Motiu de l'error" />
 
     <Button
@@ -96,7 +96,7 @@
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/motiu_error">
+        app:layout_constraintTop_toBottomOf="@+id/segona_linia">
 
     </LinearLayout>
 

@@ -1,4 +1,4 @@
-package com.example.dana.projectefinal;
+package com.example.dana.projectefinal.agenda;
 
 import android.animation.Animator;
 import android.app.Dialog;
@@ -24,6 +24,9 @@ import android.widget.TextView;
 import android.widget.ViewSwitcher;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.example.dana.projectefinal.ConnexioDades;
+import com.example.dana.projectefinal.Objectes;
+import com.example.dana.projectefinal.R;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
@@ -81,7 +84,7 @@ public class FragmentAgendaAfegirRecordatori extends Fragment implements DatePic
         bd = new ConnexioAgenda(getContext());
         recordatoriActual = new Objectes.Recordatori();
 
-        MainActivity.agendaPotTornareEnrere = false;
+        //MainActivity.agendaPotTornareEnrere = false;
 
 
         switcher            = (ViewSwitcher) view.findViewById(R.id.my_switcher);
@@ -276,7 +279,7 @@ public class FragmentAgendaAfegirRecordatori extends Fragment implements DatePic
         LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
 
-        View dview = inflater.inflate(R.layout.agenda_afegir_recordatori_error, null);
+        View dview = inflater.inflate(R.layout.popup_error, null);
 
         final Dialog dialog = new Dialog(getContext());
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -287,7 +290,7 @@ public class FragmentAgendaAfegirRecordatori extends Fragment implements DatePic
 
 
         Button btAcceptar   = (Button) dview.findViewById(R.id.acceptar);
-        TextView motiuError = (TextView) dview.findViewById(R.id.motiu_error);
+        TextView motiuError = (TextView) dview.findViewById(R.id.segona_linia);
 
         motiuError.setText(missatgeErrorGuardar);
 

@@ -1,4 +1,4 @@
-package com.example.dana.projectefinal;
+package com.example.dana.projectefinal.agenda;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -9,6 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.RadioButton;
+
+import com.example.dana.projectefinal.R;
 
 public class FragmentAgenda extends Fragment {
 
@@ -28,7 +30,7 @@ public class FragmentAgenda extends Fragment {
 
         afegirRecordatori       = view.findViewById(R.id.afegir_recordatori);
         filtrarPerData          = view.findViewById(R.id.filtrar_per_data);
-        filtrarPerEtiquetes = view.findViewById(R.id.filtrar_per_etiquetes);
+        filtrarPerEtiquetes     = view.findViewById(R.id.filtrar_per_etiquetes);
 
         afegirRecordatori.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -1,15 +1,13 @@
 package com.example.dana.projectefinal;
 
-import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.EventLog;
-import android.util.Log;
 import android.view.MenuItem;
 
+import com.example.dana.projectefinal.agenda.FragmentAgenda;
+import com.example.dana.projectefinal.disponibilitat.FragmentDisponibilitat;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 import org.greenrobot.eventbus.EventBus;

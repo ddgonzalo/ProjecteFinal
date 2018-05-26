@@ -1,4 +1,4 @@
-package com.example.dana.projectefinal;
+package com.example.dana.projectefinal.agenda;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -23,7 +23,9 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.example.dana.projectefinal.ConnexioDades;
 import com.example.dana.projectefinal.Objectes.*;
+import com.example.dana.projectefinal.R;
 import com.google.gson.Gson;
 
 import java.text.SimpleDateFormat;
@@ -182,7 +184,7 @@ public class ConnexioAgenda {
                                     case 9: mesRecordatoriStr =  "setembre";break;
                                     case 10: mesRecordatoriStr = "octubre"; break;
                                     case 11: mesRecordatoriStr = "novembre";break;
-                                    case 12: mesRecordatoriStr = "desembre";    break;
+                                    case 12: mesRecordatoriStr = "desembre";break;
                                 }
 
                                 String dataRecordatori = new SimpleDateFormat("dd").format(date) + " " + mesRecordatoriStr + ", ";
