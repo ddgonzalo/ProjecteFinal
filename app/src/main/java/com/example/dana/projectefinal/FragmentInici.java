@@ -21,7 +21,7 @@ public class FragmentInici extends Fragment {
 
         llistaAgenda = view.findViewById(R.id.llista_agenda_avui);
 
-        bd.mostrarRecordatoris("avui", llistaAgenda);
+        bd.mostrarRecordatoris(getFragmentManager(),"avui", llistaAgenda);
 
         return view;
     }

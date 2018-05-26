@@ -11,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,8 +26,10 @@ import android.widget.ViewSwitcher;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.example.dana.projectefinal.ConnexioDades;
+import com.example.dana.projectefinal.MainActivity;
 import com.example.dana.projectefinal.Objectes;
 import com.example.dana.projectefinal.R;
+import com.example.dana.projectefinal.Utilitats;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
@@ -52,12 +55,16 @@ import static com.google.android.gms.common.api.GoogleApiClient.*;
 public class FragmentAgendaAfegirRecordatori extends Fragment implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener,
         OnConnectionFailedListener, ConnectionCallbacks {
 
+    boolean nouRecordatori;
+    boolean recordatoriEditat;
+    String dataAntigaRecordatori; //per si el recordatori s'edita, saber quin era
+
     ConnexioAgenda bd;
     Objectes.Recordatori recordatoriActual;
 
     ViewSwitcher switcher;
     ImageButton btEnrere;
-    Button btGuardar;
+    Button btSuperior;
 
     ConstraintLayout canviarData, canviarEtiqueta;
     TextView tvData, tvHora, tvEtiqueta;
@@ -72,25 +79,37 @@ public class FragmentAgendaAfegirRecordatori extends Fragment implements DatePic
     PlaceArrayAdapter placesArrayAdapter;
     final LatLngBounds BOUNDS = new LatLngBounds(new LatLng(37.398160, -122.180831), new LatLng(37.430610, -121.972090));
 
-    String dataRecordatori, horaRecordatori;
+    String dataRecordatori, horaRecordatori; //data i hora en el format que es guarda a la base de dades
     String missatgeErrorGuardar;
 
 //--------------------------------------------------------------------------------------------------
+
+
+    /**
+     * Constructor
+     * @param nouRecordatori TRUE si estem creant un recordatori nou, FALSE si estem editant un recordatori existent
+     */
+    public FragmentAgendaAfegirRecordatori() {
+        nouRecordatori = true;
+    }
+
+    public FragmentAgendaAfegirRecordatori(Objectes.Recordatori recordatori) {
+        nouRecordatori = false;
+        recordatoriActual = recordatori;
+    }
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.agenda_afegir_recordatori, null);
         bd = new ConnexioAgenda(getContext());
-        recordatoriActual = new Objectes.Recordatori();
 
-        //MainActivity.agendaPotTornareEnrere = false;
 
 
         switcher            = (ViewSwitcher) view.findViewById(R.id.my_switcher);
 
         btEnrere            = view.findViewById(R.id.tornar_enrere);
-        btGuardar           = view.findViewById(R.id.guardar_recordatori);
+        btSuperior          = view.findViewById(R.id.guardar_recordatori);
         canviarData         = view.findViewById(R.id.contenidorDataHora);
         canviarEtiqueta     = view.findViewById(R.id.contenidorEtiqueta);
 
@@ -98,31 +117,26 @@ public class FragmentAgendaAfegirRecordatori extends Fragment implements DatePic
         tvHora              = view.findViewById(R.id.horaRecordatori);
         tvEtiqueta          = view.findViewById(R.id.etiqueta_recordatori);
 
+        etiquetaText        = view.findViewById(R.id.etiqueta_text);
+        etiquetaRecordatori = view.findViewById(R.id.etiqueta_recordatori);
         titolRecordatori    = view.findViewById(R.id.titol_recordatori);
         textRecordatori     = view.findViewById(R.id.text);
         ubicacioRecordatori = view.findViewById(R.id.ubicacio_recordatori);
-        etiquetaRecordatori = view.findViewById(R.id.etiqueta_recordatori);
-        etiquetaText        = view.findViewById(R.id.etiqueta_text);
 
-
-        horaRecordatori = new SimpleDateFormat("HH:mm").format(new Date());
-        tvHora.setText(horaRecordatori);
-
-        dataRecordatori = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
 
 
         btEnrere.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                tornarEnrere();
+                tornarEnrere(1);
             }
         });
 
 
-        btGuardar.setOnClickListener(new View.OnClickListener() {
+        btSuperior.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                guardarRecordatori();
+                realitzarAccioEditarOGuardar();
             }
         });
 
@@ -167,9 +181,63 @@ public class FragmentAgendaAfegirRecordatori extends Fragment implements DatePic
         placesArrayAdapter = new PlaceArrayAdapter(getContext(), android.R.layout.simple_list_item_1, BOUNDS, null);
         ubicacioRecordatori.setAdapter(placesArrayAdapter);
 
-        //Quan s'obre la finestra, per defecte l'etiqueta posada és "PERSONAL"
-        Drawable[] drawables = etiquetaText.getCompoundDrawablesRelative(); //left, top, right, bottom
-        drawables[0].setColorFilter(new PorterDuffColorFilter(Color.parseColor(ConnexioDades.llistaEtiquetes.get("PERSONAL")), PorterDuff.Mode.SRC_IN));
+        if (nouRecordatori) {
+            recordatoriEditat = false;
+            recordatoriActual = new Objectes.Recordatori();
+
+            btSuperior.setText("Guardar");
+            canviarData.setClickable(true);
+            canviarEtiqueta.setClickable(true);
+            titolRecordatori.setFocusableInTouchMode(true);
+            ubicacioRecordatori.setFocusableInTouchMode(true);
+            textRecordatori.setFocusableInTouchMode(true);
+
+            horaRecordatori = new SimpleDateFormat("HH:mm").format(new Date());
+            tvHora.setText(horaRecordatori);
+
+            dataRecordatori = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+
+            //Quan s'obre la finestra, per defecte l'etiqueta posada és "PERSONAL"
+            Drawable[] drawables = etiquetaText.getCompoundDrawables(); //left, top, right, bottom
+            drawables[0].setColorFilter(new PorterDuffColorFilter(Color.parseColor(ConnexioDades.llistaEtiquetes.get("PERSONAL")), PorterDuff.Mode.SRC_IN));
+
+        }
+        else {
+            recordatoriEditat = false;
+            btSuperior.setText("Editar");
+
+            canviarData.setClickable(false);
+            canviarEtiqueta.setClickable(false);
+            ubicacioRecordatori.setFocusableInTouchMode(false);
+
+            textRecordatori.setFocusableInTouchMode(false);
+            titolRecordatori.setFocusableInTouchMode(false);
+
+            titolRecordatori.setText(recordatoriActual.getTitol());
+            textRecordatori.setText(recordatoriActual.getText());
+
+            try {
+                Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(recordatoriActual.getData());
+                horaRecordatori = new SimpleDateFormat("HH:mm").format(date);
+                dataRecordatori = new SimpleDateFormat("yyyy-MM-dd").format(date);
+
+
+                int numeroMes = Integer.parseInt(new SimpleDateFormat("MM").format(date));
+
+                tvData.setText(new SimpleDateFormat("dd").format(date) + " " + Utilitats.getNomMes(numeroMes));
+                tvHora.setText(horaRecordatori);
+            } catch (Exception ignored) {}
+
+            ubicacioRecordatori.setText(recordatoriActual.getUbicacio());
+
+            etiquetaRecordatori.setText(recordatoriActual.getTipusRecordatori());
+
+            final String colorEtiqueta = ConnexioDades.llistaEtiquetes.get(recordatoriActual.getTipusRecordatori());
+            Drawable[] drawables = etiquetaText.getCompoundDrawables();
+            drawables[0].setColorFilter(new PorterDuffColorFilter(Color.parseColor(colorEtiqueta), PorterDuff.Mode.SRC_IN));
+        }
+
+
 
         return view;
     }
@@ -178,6 +246,12 @@ public class FragmentAgendaAfegirRecordatori extends Fragment implements DatePic
 
 
 //-- guardar recordatori ---------------------------------------------------------------------------
+
+
+    private void realitzarAccioEditarOGuardar() {
+        if (nouRecordatori) guardarRecordatori();
+        else editarRecordatori();
+    }
 
     /**
      * Comprova si el recordatori compleix els requisits per ser guardat a la base de dades i,
@@ -195,7 +269,9 @@ public class FragmentAgendaAfegirRecordatori extends Fragment implements DatePic
             recordatoriActual.setTipusRecordatori(etiquetaRecordatori.getText().toString());
 
 
-            bd.guardarRecordatori(recordatoriActual);
+            if (recordatoriEditat) bd.editarRecordatori(recordatoriActual, dataAntigaRecordatori);
+            else bd.guardarRecordatori(recordatoriActual);
+
             LottieAnimationView lottie = switcher.findViewById(R.id.animation_view);
 
             //afegim un listener a l'animació perquè torni enrere quan acabi
@@ -220,6 +296,8 @@ public class FragmentAgendaAfegirRecordatori extends Fragment implements DatePic
                     getFragmentManager().beginTransaction()
                             .replace(R.id.frameLayout, new FragmentAgenda())
                             .commit();
+
+                    MainActivity.canviarPestaña(1);
                 }
 
                 @Override
@@ -234,10 +312,9 @@ public class FragmentAgendaAfegirRecordatori extends Fragment implements DatePic
         }
 
         else { //No compleix algún requisit per guardar el recordatori
-            mostrarMissatgeErrorGuardar();
+            Utilitats.mostrarMissatgeError(getContext(), "No s'ha pogut guardar el recordatori,", missatgeErrorGuardar);
         }
     }
-
 
     /**
      * Comprova si el recordatori compleix els requisits per poder ser guardat a la base de dades
@@ -275,93 +352,97 @@ public class FragmentAgendaAfegirRecordatori extends Fragment implements DatePic
     }
 
 
-    private void mostrarMissatgeErrorGuardar() {
-        LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+//-- editar recordatori ----------------------------------------------------------------------------
 
 
-        View dview = inflater.inflate(R.layout.popup_error, null);
+    private void editarRecordatori() {
+        nouRecordatori = true;
+        recordatoriEditat = true;
+        dataAntigaRecordatori = recordatoriActual.getData();
 
-        final Dialog dialog = new Dialog(getContext());
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(dview);
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        btSuperior.setText("Guardar");
 
-        dialog.show();
-
-
-        Button btAcceptar   = (Button) dview.findViewById(R.id.acceptar);
-        TextView motiuError = (TextView) dview.findViewById(R.id.segona_linia);
-
-        motiuError.setText(missatgeErrorGuardar);
-
-
-        btAcceptar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dialog.dismiss();
-            }
-        });
+        titolRecordatori.setFocusableInTouchMode(true);
+        textRecordatori.setFocusableInTouchMode(true);
+        ubicacioRecordatori.setFocusableInTouchMode(true);
+        canviarData.setClickable(true);
+        canviarEtiqueta.setClickable(true);
     }
 
 //-- tornar enrere ---------------------------------------------------------------------------------
 
     /**
      * Mostra un missatge de confirmació per forçar la sortida, ja que la nota no s'ha guardat
+     * @param idPestaña Pestaña a la que es vol canviar
      */
-    private void tornarEnrere() {
-        LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    private void tornarEnrere(final int idPestaña) {
+        if (nouRecordatori) {
+            LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
 
-        View dview = inflater.inflate(R.layout.agenda_afegir_recordatori_confirmacio, null);
+            View dview = inflater.inflate(R.layout.agenda_afegir_recordatori_confirmacio, null);
 
-        final Dialog dialog = new Dialog(getContext());
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(dview);
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+            final Dialog dialog = new Dialog(getContext());
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            dialog.setContentView(dview);
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
 
-        dialog.show();
-
-
-        Button btCancelar = (Button) dview.findViewById(R.id.cancelar);
-        Button btAcceptar = (Button) dview.findViewById(R.id.acceptar);
-
-        btCancelar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dialog.dismiss();
-            }
-        });
+            dialog.show();
 
 
-        btAcceptar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+            Button btCancelar = (Button) dview.findViewById(R.id.cancelar);
+            Button btAcceptar = (Button) dview.findViewById(R.id.acceptar);
 
-                //Tenca la connexió amb Google API
-                googleApiClient.stopAutoManage(getActivity());
-                googleApiClient.disconnect();
-
-
-                /*if (itemMenuSeleccionat != -1) {
-                  EventBus.getDefault().post("cambiar pestaña " + itemMenuSeleccionat);
+            btCancelar.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dialog.dismiss();
                 }
-                else {*/
-                    //Canvi de fragment
+            });
+
+
+            btAcceptar.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    //Tenca la connexió amb Google API
+                    googleApiClient.stopAutoManage(getActivity());
+                    googleApiClient.disconnect();
+
                     getFragmentManager().popBackStack(); //perquè no es vagin acumulant fragments
 
                     getFragmentManager().beginTransaction()
                             .replace(R.id.frameLayout, new FragmentAgenda())
                             .commit();
 
+                    MainActivity.canviarPestaña(idPestaña);
+
                     dialog.dismiss();
-                //}
-            }
-        });
+                }
+            });
+        }
+
+        else {
+            //Tenca la connexió amb Google API
+            googleApiClient.stopAutoManage(getActivity());
+            googleApiClient.disconnect();
+
+            getFragmentManager().popBackStack(); //perquè no es vagin acumulant fragments
+
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.frameLayout, new FragmentAgenda())
+                    .commit();
+
+            MainActivity.canviarPestaña(idPestaña);
+        }
     }
 
 //-- Triar una etiqueta per el recordatori ---------------------------------------------------------
 
 
+    /**
+     * Mostra per pantalla un PopUp amb la llista d'etiquetes EXISTENTS i permet triar una per posar-li al recordatori
+     */
     private void canviarEtiqueta() {
         LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -422,24 +503,8 @@ public class FragmentAgendaAfegirRecordatori extends Fragment implements DatePic
     @Override
     public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
 
-        String mes = null;
 
-        monthOfYear++; //tenen index 0
-
-        switch (monthOfYear) {
-            case 1: mes  =  "gener";    break;
-            case 2: mes  =  "febrer";   break;
-            case 3: mes  =  "març";     break;
-            case 4: mes  =  "abril";    break;
-            case 5: mes  =  "maig";     break;
-            case 6: mes  =  "juny";     break;
-            case 7: mes  =  "juliol";   break;
-            case 8: mes  =  "agost";    break;
-            case 9: mes  =  "setembre"; break;
-            case 10: mes =  "octubre";  break;
-            case 11: mes =  "novembre"; break;
-            case 12: mes =  "desembre"; break;
-        }
+        String mes = Utilitats.getNomMes(++monthOfYear);
 
 
         //per poder-ho comparar amb la data actual, el camp "mes" ha de tenir dos dígits
@@ -538,9 +603,9 @@ public class FragmentAgendaAfegirRecordatori extends Fragment implements DatePic
     @Subscribe
     public void handleEvents(String missatge) {
 
-        if (missatge.equals("sortir")) {
+        if (missatge.contains("sortir")) {
             //Quan es prem algun botó del menú inferior arriba aquest missatge
-            tornarEnrere();
+            tornarEnrere(Integer.parseInt(missatge.split(" ")[1]));
         }
     }
 }

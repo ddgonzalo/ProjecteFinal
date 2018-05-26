@@ -1,5 +1,6 @@
 package com.example.dana.projectefinal.agenda;
 
+import android.app.FragmentManager;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -26,6 +27,7 @@ import org.json.JSONObject;
 import com.example.dana.projectefinal.ConnexioDades;
 import com.example.dana.projectefinal.Objectes.*;
 import com.example.dana.projectefinal.R;
+import com.example.dana.projectefinal.Utilitats;
 import com.google.gson.Gson;
 
 import java.text.SimpleDateFormat;
@@ -63,8 +65,8 @@ public class ConnexioAgenda {
      * @param quan "avui", "dema", "setmana" o "mes", depenent de quins recordatoris es volen veure
      * @param llistaRecordatoris LinearLayout on es mostraran els recordatoris
      */
-    public void mostrarRecordatoris(String quan, final LinearLayout llistaRecordatoris) {
-        JsonArrayRequest jsonRequest = new JsonArrayRequest(Request.Method.GET, URL_AGENDA + "?" + quan + "=1", null,
+    public void mostrarRecordatoris(final android.support.v4.app.FragmentManager fragmentManager, final String quan, final LinearLayout llistaRecordatoris) {
+        final JsonArrayRequest jsonRequest = new JsonArrayRequest(Request.Method.GET, URL_AGENDA + "?" + quan + "=1", null,
                 new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray response) {
@@ -73,13 +75,15 @@ public class ConnexioAgenda {
                             try {
                                 JSONObject jsonObject = response.getJSONObject(i);
 
-                                Recordatori rec = new Recordatori();
+                                final Recordatori rec = new Recordatori();
 
                                 rec.setData(jsonObject.getString("data"));
                                 rec.setTitol(jsonObject.getString("titol"));
                                 rec.setText(jsonObject.getString("text"));
                                 rec.setUbicacio(jsonObject.getString("ubicacio"));
                                 rec.setTipusRecordatori(jsonObject.getString("tipusRecordatori"));
+
+                                Log.i("COLORSPLS", "Setting etiqueta " + rec.getTipusRecordatori());
 
                                 Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(rec.getData());
                                 String horaRecordatori = new SimpleDateFormat("HH:mm").format(date);
@@ -94,10 +98,35 @@ public class ConnexioAgenda {
                                 //canvia el color del cercle en funció del tipus de recordatori (lloguer, personal...)
                                 String colorRecordatori = ConnexioDades.llistaEtiquetes.get(rec.getTipusRecordatori());
                                 background.setColorFilter(new PorterDuffColorFilter(Color.parseColor(colorRecordatori), PorterDuff.Mode.SRC_IN));
-                                hora.setText(horaRecordatori);
                                 recordatori.setText(rec.getTitol());
 
+
+                                //Si els recordatoris que es mostren són els de els próxims 7 dies o els d'aquest mes,
+                                //s'ha d'indicar de quin dia es tracta (no només la hora)
+                                if (quan.equals("setmana") || quan.equals("mes")) {
+                                    int mesRecordatori = Integer.parseInt(new SimpleDateFormat("MM").format(date));
+
+                                    String mesRecordatoriStr = Utilitats.getNomMes(mesRecordatori);
+
+                                    String dataRecordatori = new SimpleDateFormat("dd").format(date) + " " + mesRecordatoriStr + ", ";
+                                    dataRecordatori += new SimpleDateFormat("HH:mm").format(date);
+
+                                    hora.setText(dataRecordatori);
+                                }
+                                else hora.setText(horaRecordatori);
+
+
                                 llistaRecordatoris.addView(fila);
+
+                                fila.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        fragmentManager.beginTransaction()
+                                                .replace(R.id.frameLayout, new FragmentAgendaAfegirRecordatori(rec))
+                                                .addToBackStack(null)
+                                                .commit();
+                                    }
+                                });
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -126,10 +155,33 @@ public class ConnexioAgenda {
         Gson gson = new Gson();
         final String recordatoriJson = gson.toJson(recordatori);
 
-        Log.i("VOLLEYPLS", URL_GUARDAR_RECORDATORI + "?recordatori=" + recordatoriJson);
+        StringRequest string_request = new StringRequest(Request.Method.GET, URL_GUARDAR_RECORDATORI + "?nouRecordatori=" + recordatoriJson,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.i("VOLLEYPLS", "yay");
+                    }
+                },
 
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.i("VOLLEYPLS", "Error response");
+                        error.printStackTrace();
+                    }
+                }
+        );
 
-        StringRequest string_request = new StringRequest(Request.Method.GET, URL_GUARDAR_RECORDATORI + "?recordatori=" + recordatoriJson,
+        queue.add(string_request);
+    }
+
+    public void editarRecordatori(Recordatori recordatori, String dataAntiga) {
+        Gson gson = new Gson();
+        final String recordatoriJson = gson.toJson(recordatori);
+
+        Log.i("AGENDAPLS", URL_GUARDAR_RECORDATORI + "?recordatori=" + recordatoriJson + "&dataAntiga=" + dataAntiga);
+
+        StringRequest string_request = new StringRequest(Request.Method.GET, URL_GUARDAR_RECORDATORI + "?recordatori=" + recordatoriJson + "&dataAntiga=" + dataAntiga,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -166,26 +218,13 @@ public class ConnexioAgenda {
                                 rec.setTitol(jsonObject.getString("titol"));
                                 rec.setText(jsonObject.getString("text"));
                                 rec.setUbicacio(jsonObject.getString("ubicacio"));
+                                rec.setTipusRecordatori(nomEtiqueta);
 
                                 Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(rec.getData());
 
                                 int mesRecordatori = Integer.parseInt(new SimpleDateFormat("MM").format(date));
-                                String mesRecordatoriStr = "";
 
-                                switch (mesRecordatori) {
-                                    case 1: mesRecordatoriStr =  "gener";   break;
-                                    case 2: mesRecordatoriStr =  "febrer";  break;
-                                    case 3: mesRecordatoriStr =  "març";    break;
-                                    case 4: mesRecordatoriStr =  "abril";   break;
-                                    case 5: mesRecordatoriStr =  "maig";    break;
-                                    case 6: mesRecordatoriStr =  "juny";    break;
-                                    case 7: mesRecordatoriStr =  "juliol";  break;
-                                    case 8: mesRecordatoriStr =  "agost";   break;
-                                    case 9: mesRecordatoriStr =  "setembre";break;
-                                    case 10: mesRecordatoriStr = "octubre"; break;
-                                    case 11: mesRecordatoriStr = "novembre";break;
-                                    case 12: mesRecordatoriStr = "desembre";break;
-                                }
+                                String mesRecordatoriStr = Utilitats.getNomMes(mesRecordatori);
 
                                 String dataRecordatori = new SimpleDateFormat("dd").format(date) + " " + mesRecordatoriStr + ", ";
                                 dataRecordatori += new SimpleDateFormat("HH:mm").format(date);

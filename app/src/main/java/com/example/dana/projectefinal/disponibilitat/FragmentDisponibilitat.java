@@ -23,6 +23,7 @@ import android.widget.TextView;
 import com.airbnb.lottie.LottieAnimationView;
 import com.example.dana.projectefinal.ConnexioDades;
 import com.example.dana.projectefinal.R;
+import com.example.dana.projectefinal.Utilitats;
 import com.rengwuxian.materialedittext.MaterialAutoCompleteTextView;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
@@ -206,17 +207,23 @@ public class FragmentDisponibilitat extends Fragment implements DatePickerDialog
 
 //-- Comprovar disponibilitat ----------------------------------------------------------------------
 
-    public void comprobarDisponibilitatArticle() {
 
+    /**
+     * Comprova si un article està disponible en un dia o en un període de temps determinat
+     * Si l'article que es vol buscar no existeix, mostra per pantalla un missatge informant de l'error.
+     */
+    public void comprobarDisponibilitatArticle() {
+        //Primer comprova si l'article triat existeix a la base de dades
         if (rbBicicleta.isChecked()) {
             if (!llistaNomsBicicletes.contains(nomArticle.getText().toString())) {
-                mostrarMissatgeError();
+                Utilitats.mostrarMissatgeError(getContext(), "L'article no existeix,", "si us plau, tria un altre.");
+                //mostrarMissatgeError();
                 return;
             }
         }
         else {
             if (!llistaNomsScooters.contains(nomArticle.getText().toString())) {
-                mostrarMissatgeError();
+                Utilitats.mostrarMissatgeError(getContext(), "L'article no existeix,", "si us plau, tria un altre.");
                 return;
             }
         }
@@ -230,37 +237,6 @@ public class FragmentDisponibilitat extends Fragment implements DatePickerDialog
         else {
             connexio.comprovarDisponibilitatScooter(textLlogat, btLlogar, animationView, idArticle, strDataInici + " " + strHoraInici, strDataFi + " " + strHoraFi);
         }
-    }
-
-    private void mostrarMissatgeError() {
-
-        LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-
-        View dview = inflater.inflate(R.layout.popup_error, null);
-
-        final Dialog dialog = new Dialog(getContext());
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(dview);
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-
-        dialog.show();
-
-
-        Button btAcceptar       = (Button) dview.findViewById(R.id.acceptar);
-        TextView primeraLinia   = (TextView) dview.findViewById(R.id.primera_linia);
-        TextView segonaLinia    = (TextView) dview.findViewById(R.id.segona_linia);
-
-        primeraLinia.setText("L'article triat no existeix,");
-        segonaLinia.setText("si us plau, tria un altre.");
-
-
-        btAcceptar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dialog.dismiss();
-            }
-        });
     }
 
 
@@ -385,12 +361,14 @@ public class FragmentDisponibilitat extends Fragment implements DatePickerDialog
 
             case R.id.bt_comprovar: comprobarDisponibilitatArticle(); break;
 
+            //busca l'article triat a la llista de bicicletes
             case R.id.rb_bicicleta:
                 adapter = new FilterWithSpaceAdapter<> (getContext(),android.R.layout.simple_list_item_1, llistaNomsBicicletes);
                 nomArticle.setThreshold(1);
                 nomArticle.setAdapter(adapter);
                 break;
 
+            //busca l'article triat a la llista d'scooters
             case R.id.rb_scooter:
                 adapter = new FilterWithSpaceAdapter<> (getContext(),android.R.layout.simple_list_item_1, llistaNomsScooters);
                 nomArticle.setThreshold(1);

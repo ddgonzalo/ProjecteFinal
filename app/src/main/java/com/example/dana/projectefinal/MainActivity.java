@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     public boolean onNavigationItemSelected(MenuItem item) {
 
 
-        EventBus.getDefault().post("sortir");
+        //EventBus.getDefault().post("sortir " + bottomNavigation.getMenuItemPosition(item));
 
             Fragment fragment = null;
 
@@ -90,6 +90,11 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     }
 
 //-- Cicle de vida de l'activitat ------------------------------------------------------------------
+
+
+    public static void canviarPestaña(int id) {
+        bottomNavigation.setCurrentItem(id);
+    }
 
     @Override
     public void onBackPressed() {

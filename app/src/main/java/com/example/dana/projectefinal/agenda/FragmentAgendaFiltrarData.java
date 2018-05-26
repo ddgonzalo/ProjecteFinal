@@ -27,10 +27,11 @@ public class FragmentAgendaFiltrarData extends Fragment {
         llistaProximsDies   = view.findViewById(R.id.llista_agenda_setmana);
         llistaAquestMes     = view.findViewById(R.id.llista_agenda_mes);
 
-        bd.mostrarRecordatoris("avui", llistaAvui);
-        bd.mostrarRecordatoris("dema", llistaDema);
-        bd.mostrarRecordatoris("setmana", llistaProximsDies);
-        bd.mostrarRecordatoris("mes", llistaAquestMes);
+        bd.mostrarRecordatoris(getActivity().getSupportFragmentManager(),"avui", llistaAvui);
+        bd.mostrarRecordatoris(getActivity().getSupportFragmentManager(),"dema", llistaDema);
+        bd.mostrarRecordatoris(getActivity().getSupportFragmentManager(),"setmana", llistaProximsDies);
+        bd.mostrarRecordatoris(getActivity().getSupportFragmentManager(),"mes", llistaAquestMes);
+
 
         return view;
     }
