@@ -8,6 +8,7 @@ import android.view.MenuItem;
 
 import com.example.dana.projectefinal.agenda.FragmentAgenda;
 import com.example.dana.projectefinal.disponibilitat.FragmentDisponibilitat;
+import com.example.dana.projectefinal.inventari.FragmentInventari;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 import org.greenrobot.eventbus.EventBus;
