@@ -1,22 +1,12 @@
 package com.example.dana.projectefinal.disponibilitat;
 
-import android.app.Dialog;
-import android.content.Context;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffColorFilter;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
@@ -155,7 +145,7 @@ public class FragmentDisponibilitat extends Fragment implements DatePickerDialog
 
     public void inicialitzarViews() {
 
-        nomArticle                  = (MaterialAutoCompleteTextView) view.findViewById(R.id.nom_article);
+        nomArticle                  = (MaterialAutoCompleteTextView) view.findViewById(R.id.marca_model_article);
         rbBicicleta                 = (RadioButton) view.findViewById(R.id.rb_bicicleta);
         rbScooter                   = (RadioButton) view.findViewById(R.id.rb_scooter);
         btComprovarDisponibilitat   = (Button) view.findViewById(R.id.bt_comprovar);

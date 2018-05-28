@@ -35,8 +35,11 @@ public class ConnexioDades {
     public static HashMap<String, String> llistaEtiquetes;
     public static HashMap<Integer, String> llistaEstatsRecordatoris;
 
-    public static HashMap<Integer, String> llistaBicicletes;
-    public static HashMap<Integer, String> llistaScooters;
+    public static HashMap<Integer, Objectes.Article> llistaBicicletes;
+    public static HashMap<Integer, Objectes.Article> llistaScooters;
+
+    public static HashMap<Integer, Integer> magatzemBicis;
+    public static HashMap<Integer, Integer> magatzemScooters;
 
     public ConnexioDades(Context context) {
             queue = Volley.newRequestQueue(context);
@@ -116,7 +119,8 @@ public class ConnexioDades {
         queue.add(string_request);
     }
 
-    private void carregarBicicletes() {
+
+    public static void carregarBicicletes() {
         llistaBicicletes = new HashMap<>();
 
         JsonArrayRequest string_request = new JsonArrayRequest(Method.GET, SERVIDOR + "bicicletes.php", null,
@@ -127,10 +131,25 @@ public class ConnexioDades {
                         for (int i=0; i<response.length(); i++) {
                             try {
                                 JSONObject jsonObject = response.getJSONObject(i);
+                                Objectes.Article bici = new Objectes.Article();
 
-                                llistaBicicletes.put(jsonObject.getInt("id"), jsonObject.getString("marca") + " " + jsonObject.getString("model"));
-                            } catch (Exception ignored) {}
+                                bici.setId(jsonObject.getString("id"));
+                                bici.setMarca(jsonObject.getString("marca"));
+                                bici.setModel(jsonObject.getString("model"));
+
+                                bici.setAutonomia(jsonObject.getString("autonomia"));
+                                bici.setBateria(jsonObject.getString("bateria"));
+                                bici.setVelocitat(jsonObject.getString("velocitat"));
+                                bici.setPes(Double.parseDouble(jsonObject.getString("pes")));
+                                bici.setPreu(Double.parseDouble(jsonObject.getString("preu")));
+
+                                llistaBicicletes.put(jsonObject.getInt("id"), bici);
+                            } catch (Exception ignored) {
+                                ignored.printStackTrace();
+                            }
                         }
+
+                        carregarMagatzemBicis();
                     }
                 },
 
@@ -145,7 +164,7 @@ public class ConnexioDades {
         queue.add(string_request);
     }
 
-    private void carregarScooters() {
+    public static void carregarScooters() {
         llistaScooters = new HashMap<>();
 
         JsonArrayRequest string_request = new JsonArrayRequest(Method.GET, SERVIDOR + "scooters.php", null,
@@ -156,8 +175,81 @@ public class ConnexioDades {
                         for (int i=0; i<response.length(); i++) {
                             try {
                                 JSONObject jsonObject = response.getJSONObject(i);
+                                Objectes.Article scooter = new Objectes.Article();
 
-                                llistaScooters.put(jsonObject.getInt("id"), jsonObject.getString("marca") + " " + jsonObject.getString("model"));
+                                scooter.setId(jsonObject.getString("id"));
+                                scooter.setMarca(jsonObject.getString("marca"));
+                                scooter.setModel(jsonObject.getString("model"));
+
+                                scooter.setAutonomia(jsonObject.getString("autonomia"));
+                                scooter.setBateria(jsonObject.getString("bateria"));
+                                scooter.setVelocitat(jsonObject.getString("velocitat"));
+                                scooter.setPes(Double.parseDouble(jsonObject.getString("pes")));
+                                scooter.setPreu(Double.parseDouble(jsonObject.getString("preu")));
+
+                                llistaScooters.put(jsonObject.getInt("id"), scooter);
+
+
+                            } catch (Exception ignored) {}
+                        }
+
+                        carregarMagatzemScooters();
+                    }
+                },
+
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        error.printStackTrace();
+                    }
+                }
+        );
+
+        queue.add(string_request);
+    }
+
+    public static void carregarMagatzemBicis() {
+        magatzemBicis = new HashMap<>();
+        JsonArrayRequest string_request = new JsonArrayRequest(Method.GET, SERVIDOR + "bicicletes.php?magatzem=1", null,
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+
+                        for (int i=0; i<response.length(); i++) {
+                            try {
+                                JSONObject jsonObject = response.getJSONObject(i);
+                                magatzemBicis.put(jsonObject.getInt("id"), jsonObject.getInt("idPare"));
+                            } catch (Exception ignored) {
+
+                            }
+                        }
+                    }
+                },
+
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        error.printStackTrace();
+
+                    }
+                }
+        );
+
+        queue.add(string_request);
+    }
+
+    public static void carregarMagatzemScooters() {
+        magatzemScooters = new HashMap<>();
+
+        JsonArrayRequest string_request = new JsonArrayRequest(Method.GET, SERVIDOR + "scooters.php?magatzem=1", null,
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+
+                        for (int i=0; i<response.length(); i++) {
+                            try {
+                                JSONObject jsonObject = response.getJSONObject(i);
+                                magatzemScooters.put(jsonObject.getInt("id"), jsonObject.getInt("idPare"));
                             } catch (Exception ignored) {}
                         }
                     }

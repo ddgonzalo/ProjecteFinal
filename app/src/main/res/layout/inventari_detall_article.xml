@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/titol"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="8dp"
+        android:fontFamily="@font/sf_pro_display_bold"
+        android:text="Vista article"
+        android:textColor="@android:color/black"
+        android:textSize="34sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@+id/tornar_enrere"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/tornar_enrere"
+        android:layout_width="40dp"
+        android:layout_height="0dp"
+        android:background="@android:color/transparent"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toBottomOf="@+id/titol"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/titol"
+        app:srcCompat="@drawable/ic_enrere" />
+
+    <LinearLayout
+        android:id="@+id/separador"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="2dp"
+        android:background="@color/grisClar"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/titol" />
+
+    <Button
+        android:id="@+id/editar_article"
+        style="@android:style/Widget.Button"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginEnd="8dp"
+        android:background="@android:color/transparent"
+        android:clickable="true"
+        android:fontFamily="@font/sf_pro_text_bold"
+        android:gravity="center"
+        android:text="Editar"
+        android:textColor="@color/negre"
+        android:textSize="17sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/titol"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/titol" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:background="@color/blanc"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/separador"
+        app:layout_constraintVertical_bias="1.0">
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/botons"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="32dp"
+                android:layout_marginStart="16dp"
+                app:layout_constraintEnd_toStartOf="@+id/imatge_article"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/marca_model_article">
+
+                <Button
+                    android:id="@+id/bt_llogar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Llogar"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <Button
+                    android:id="@+id/bt_vendre"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Vendre"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </android.support.constraint.ConstraintLayout>
+
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:id="@+id/pes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:focusableInTouchMode="false"
+                android:fontFamily="@font/sf_pro_display_light"
+                android:text="80"
+                android:textColor="@color/negre"
+                android:textSize="17sp"
+                app:layout_constraintBaseline_toBaselineOf="@+id/preu_text2"
+                app:layout_constraintStart_toStartOf="@+id/preu_article"
+                app:met_hideUnderline="true" />
+
+            <TextView
+                android:id="@+id/preu_text2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:fontFamily="@font/sf_pro_display_light"
+                android:text="Pes"
+                android:textColor="@color/gris"
+                android:textSize="17sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/preu_text" />
+
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:id="@+id/bateria"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:focusableInTouchMode="false"
+                android:fontFamily="@font/sf_pro_display_light"
+                android:textColor="@color/negre"
+                android:textSize="17sp"
+                app:layout_constraintBaseline_toBaselineOf="@+id/textView18"
+                app:layout_constraintStart_toStartOf="@+id/autonomia"
+                app:met_hideUnderline="true"
+                tools:text="40 Ah" />
+
+            <TextView
+                android:id="@+id/textView18"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:fontFamily="@font/sf_pro_display_light"
+                android:text="Bateria"
+                android:textColor="@color/gris"
+                android:textSize="17sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView15" />
+
+            <ImageView
+                android:id="@+id/imatge_article"
+                android:layout_width="125dp"
+                android:layout_height="125dp"
+                android:layout_marginEnd="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/marca_model_article"
+                app:srcCompat="@drawable/cercle" />
+
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:focusableInTouchMode="false"
+                android:id="@+id/marca_model_article"
+                app:met_hideUnderline="true"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="16dp"
+                android:fontFamily="@font/sf_pro_display_medium"
+                android:maxLines="2"
+                android:minLines="1"
+                android:singleLine="false"
+                android:textColor="@color/negre"
+                android:textSize="22sp"
+                app:layout_constraintEnd_toStartOf="@+id/imatge_article"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/id_article"
+                tools:text="Marca i model de l'article" />
+
+            <TextView
+                android:id="@+id/id_article"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:fontFamily="@font/sf_pro_display_light"
+                android:textColor="@color/gris"
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="ID de l'article: 100" />
+
+            <TextView
+                android:id="@+id/preu_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="50dp"
+                android:fontFamily="@font/sf_pro_display_light"
+                android:text="Preu"
+                android:textColor="@color/gris"
+                android:textSize="17sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/botons" />
+
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:id="@+id/preu_article"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="60dp"
+                android:focusableInTouchMode="false"
+                android:fontFamily="@font/sf_pro_display_light"
+                android:textColor="@color/negre"
+                android:textSize="17sp"
+                app:layout_constraintBaseline_toBaselineOf="@+id/preu_text"
+                app:layout_constraintStart_toEndOf="@+id/preu_text"
+                app:met_hideUnderline="true"
+                tools:text="19,07" />
+
+            <TextView
+                android:id="@+id/textView11"
+                android:layout_width="wrap_content"
+                android:layout_height="25dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:fontFamily="@font/sf_pro_display_light"
+                android:text="Velocitat"
+                android:textColor="@color/gris"
+                android:textSize="17sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/preu_text2" />
+
+            <TextView
+                android:id="@+id/textView15"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:fontFamily="@font/sf_pro_display_light"
+                android:text="Autonomia"
+                android:textColor="@color/gris"
+                android:textSize="17sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView11" />
+
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:id="@+id/velocitat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:focusableInTouchMode="false"
+                android:fontFamily="@font/sf_pro_display_light"
+                android:text="10 Km/h"
+                android:textColor="@color/negre"
+                android:textSize="17sp"
+                app:layout_constraintBaseline_toBaselineOf="@+id/textView11"
+                app:layout_constraintStart_toStartOf="@+id/preu_article"
+                app:met_hideUnderline="true" />
+
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:id="@+id/autonomia"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:focusableInTouchMode="false"
+                android:fontFamily="@font/sf_pro_display_light"
+                android:text="32 Km."
+                android:textColor="@color/negre"
+                android:textSize="17sp"
+                app:layout_constraintBaseline_toBaselineOf="@+id/textView15"
+                app:layout_constraintStart_toStartOf="@+id/velocitat"
+                app:met_hideUnderline="true" />
+
+            <TextView
+                android:id="@+id/textView6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:fontFamily="@font/sf_pro_display_light"
+                android:text="€"
+                android:textColor="@color/negre"
+                android:textSize="17sp"
+                app:layout_constraintBaseline_toBaselineOf="@+id/preu_article"
+                app:layout_constraintStart_toEndOf="@+id/preu_article" />
+
+            <TextView
+                android:id="@+id/textView7"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:fontFamily="@font/sf_pro_display_light"
+                android:text="Kg"
+                android:textColor="@color/negre"
+                android:textSize="17sp"
+                app:layout_constraintBaseline_toBaselineOf="@+id/pes"
+                app:layout_constraintStart_toEndOf="@+id/pes" />
+
+        </android.support.constraint.ConstraintLayout>
+    </ScrollView>
+
+</android.support.constraint.ConstraintLayout>
