@@ -6,9 +6,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
 
-import com.example.dana.projectefinal.agenda.FragmentAgenda;
-import com.example.dana.projectefinal.disponibilitat.FragmentDisponibilitat;
-import com.example.dana.projectefinal.inventari.FragmentInventari;
+import com.example.dana.projectefinal.agenda.ConnexioAgenda;
+import com.example.dana.projectefinal.agenda.AgendaMain;
+import com.example.dana.projectefinal.disponibilitat.DisponibilitatMain;
+import com.example.dana.projectefinal.inventari.ConnexioInventari;
+import com.example.dana.projectefinal.inventari.InventariMain;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 import org.greenrobot.eventbus.EventBus;
@@ -28,7 +30,13 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ConnexioDades connexioPrincipal = new ConnexioDades(this);
+        ConnexioDades conn = new ConnexioDades(this);
+
+
+        ConnexioAgenda connAgenda = new ConnexioAgenda(this);
+        connAgenda.carregarDades();
+        ConnexioInventari connInventari = new ConnexioInventari(this);
+        connInventari.carregarDades();
 
         bottomNavigation = (BottomNavigationViewEx) findViewById(R.id.bnve);
 
@@ -66,15 +74,15 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                     break;
 
                 case R.id.action_agenda:
-                    fragment = new FragmentAgenda();
+                    fragment = new AgendaMain();
                     break;
 
                 case R.id.action_disponibilitat:
-                    fragment = new FragmentDisponibilitat();
+                    fragment = new DisponibilitatMain();
                     break;
 
                 case R.id.action_inventari:
-                    fragment = new FragmentInventari();
+                    fragment = new InventariMain();
                     break;
 
                 case R.id.action_settings:

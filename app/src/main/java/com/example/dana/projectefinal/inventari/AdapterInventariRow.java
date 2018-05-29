@@ -3,17 +3,13 @@ package com.example.dana.projectefinal.inventari;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import com.example.dana.projectefinal.ConnexioDades;
-import com.example.dana.projectefinal.Objectes;
 import com.example.dana.projectefinal.R;
-import com.google.gson.Gson;
 
 import java.util.List;
 
@@ -72,7 +68,7 @@ public class AdapterInventariRow extends BaseAdapter {
         convertView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FragmentInventariDetallArticle fragment = new FragmentInventariDetallArticle();
+                InventariDetallArticle fragment = new InventariDetallArticle();
 
 
                 Bundle args = new Bundle();

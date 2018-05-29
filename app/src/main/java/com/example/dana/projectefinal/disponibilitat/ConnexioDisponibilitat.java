@@ -52,10 +52,20 @@ public class ConnexioDisponibilitat {
         queue = Volley.newRequestQueue(context);
     }
 
+
+    /**
+     * Comprova si per una data i hora d'inici, i una data i hora de fi, una bicicleta determinada està disponible per llogar-se.
+     * @param text TextView que mostrarà el missatge d'error en cas de que no es pugui llogar la bicicleta
+     * @param btLlogar Button per anar a la pestanya "LLOGUERS" si la bicicleta està disponible per llogar
+     * @param animation Animació
+     * @param idBici ID de la bicicleta que es vol llogar
+     * @param dataInici Data i hora d'inici del lloguer en format "yyyy-MM-dd HH:mm:ss"
+     * @param dataFi Data i hora de fi del lloguer en format "yyyy-MM-dd HH:mm:ss"
+     */
     public void comprovarDisponibilitatBicicleta (final TextView text, final Button btLlogar, final LottieAnimationView animation, String idBici, String dataInici, String dataFi) {
 
         String url = URL_DISPONIBILITAT + "?bicicleta=" + idBici + "&dataInici=" + dataInici + "&dataFi=" + dataFi;
-        Log.i("VOLLEYPLS", url);
+
         final JsonArrayRequest jsonRequest = new JsonArrayRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONArray>() {
                     @Override
@@ -96,10 +106,11 @@ public class ConnexioDisponibilitat {
         queue.add(jsonRequest);
     }
 
-    public void comprovarDisponibilitatScooter (TextView text, final Button btLlogar, final LottieAnimationView animation, String idScooter, String dataInici, String dataFi) {
+
+    public void comprovarDisponibilitatScooter (final TextView text, final Button btLlogar, final LottieAnimationView animation, String idScooter, String dataInici, String dataFi) {
 
         String url = URL_DISPONIBILITAT + "?scooter=" + idScooter + "&dataInici=" + dataInici + "&dataFi=" + dataFi;
-        Log.i("VOLLEYPLS", url);
+
         JsonArrayRequest jsonRequest = new JsonArrayRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONArray>() {
                     @Override
@@ -107,14 +118,23 @@ public class ConnexioDisponibilitat {
                         //La consulta ha retornat algún resultat, per tant la bicicleta no està disponible
                         animation.setAnimation(R.raw.error_animation);
                         btLlogar.setVisibility(GONE);
+                        text.setVisibility(VISIBLE);
                         animation.playAnimation();
-                        for (int i=0; i<response.length(); i++) {
-                            try {
 
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
+                        try {
+                            JSONObject jsonObject = response.getJSONObject(0);
+
+                            Date dateDataInici = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(jsonObject.getString("dataInici"));
+                            String dataIniciLloguer = new SimpleDateFormat("dd/MM/yyyy").format(dateDataInici) + " a les " + new SimpleDateFormat("HH:mm").format(dateDataInici);
+
+                            Date dateDataFi = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(jsonObject.getString("dataFi"));
+                            String dataFiLloguer = new SimpleDateFormat("dd/MM/yyyy").format(dateDataFi) + " a les " + new SimpleDateFormat("HH:mm").format(dateDataFi);
+
+                            text.setText("Llogat del " + dataIniciLloguer + " fins el " + dataFiLloguer);
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
+
                     }
                 },
 
@@ -123,6 +143,7 @@ public class ConnexioDisponibilitat {
                     public void onErrorResponse(VolleyError error) {
                         //La consulta ha retornat "null", per tant, la bicicleta està disponible
                         btLlogar.setVisibility(VISIBLE);
+                        text.setVisibility(GONE);
                         animation.setAnimation(R.raw.success_animation);
                         animation.playAnimation();
                     }

@@ -28,12 +28,11 @@ import static com.android.volley.Request.*;
 
 public class ConnexioDades {
 
-    public static String SERVIDOR = "http://192.168.1.11/";
+    public static String SERVIDOR = "http://10.0.2.2/";
 
     private static RequestQueue queue;
 
     public static HashMap<String, String> llistaEtiquetes;
-    public static HashMap<Integer, String> llistaEstatsRecordatoris;
 
     public static HashMap<Integer, Objectes.Article> llistaBicicletes;
     public static HashMap<Integer, Objectes.Article> llistaScooters;
@@ -41,15 +40,22 @@ public class ConnexioDades {
     public static HashMap<Integer, Integer> magatzemBicis;
     public static HashMap<Integer, Integer> magatzemScooters;
 
+    /**
+     * Constructor
+     * @param context Contexte on es troba la classe que l'ha inicialitzat
+     */
     public ConnexioDades(Context context) {
             queue = Volley.newRequestQueue(context);
             carregarEtiquetes();
-            //carregarEstatsRecordatoris();
             carregarBicicletes();
             carregarScooters();
     }
 
 
+    /**
+     * Carrega en el HashMap <code>llistaEtiquetes</code> una llista amb el nom de totes les etiquetes que pot tenir un recordatori
+     * (clau), i el color que té l'etiqueta (valor)
+     */
     private void carregarEtiquetes() {
         llistaEtiquetes = new HashMap<>();
 
@@ -82,44 +88,10 @@ public class ConnexioDades {
     }
 
 
-    private void carregarEstatsRecordatoris() {
-        llistaEstatsRecordatoris = new HashMap<>();
-
-        JsonArrayRequest string_request = new JsonArrayRequest(Method.POST, SERVIDOR + "connexio_principal.php", null,
-                new Response.Listener<JSONArray>() {
-                    @Override
-                    public void onResponse(JSONArray response) {
-
-                        for (int i=0; i<response.length(); i++) {
-                            try {
-                                JSONObject jsonObject = (JSONObject) response.getJSONObject(i);
-
-                                llistaEstatsRecordatoris.put(jsonObject.getInt("id"), jsonObject.getString("descripcio"));
-                            } catch (Exception ignored) {}
-                        }
-                    }
-                },
-
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        error.printStackTrace();
-                    }
-                }
-        ) {
-            @Override
-            public Map<String, String> getParams() {
-                Map<String,String> params = new HashMap<>();
-                params.put("estats", "");
-                return params;
-            }
-
-        };
-
-        queue.add(string_request);
-    }
-
-
+    /**
+     * Carrega en el HashMap <code>llistaBicicletes</code> la llista de bicicletes existents al catàleg de bicicletes
+     * on la ID de la bicicleta és la clau, i un objecte <code>Article</code> és el valor, que té totes les dades de la bicicleta
+     */
     public static void carregarBicicletes() {
         llistaBicicletes = new HashMap<>();
 
@@ -164,6 +136,11 @@ public class ConnexioDades {
         queue.add(string_request);
     }
 
+
+    /**
+     * Carrega en el HashMap <code>llistaScooters</code> la llista d'scooters existents al catàleg d'scooters
+     * on la ID de l'scooter és la clau, i un objecte <code>Article</code> és el valor, que té totes les dades de l'scooter
+     */
     public static void carregarScooters() {
         llistaScooters = new HashMap<>();
 
@@ -208,6 +185,11 @@ public class ConnexioDades {
         queue.add(string_request);
     }
 
+
+    /**
+     * Carrega en el HashMap <code>magatzemBicis</code> una llista amb l'ID únic de la bicicleta (clau),
+     * i l'ID que li correspòn al catàleg (valor)
+     */
     public static void carregarMagatzemBicis() {
         magatzemBicis = new HashMap<>();
         JsonArrayRequest string_request = new JsonArrayRequest(Method.GET, SERVIDOR + "bicicletes.php?magatzem=1", null,
@@ -238,6 +220,11 @@ public class ConnexioDades {
         queue.add(string_request);
     }
 
+
+    /**
+     * Carrega en el HashMap <code>magatzemScooters</code> una llista amb l'ID únic de l'scooter (clau),
+     * i l'ID que li correspòn al catàleg (valor)
+     */
     public static void carregarMagatzemScooters() {
         magatzemScooters = new HashMap<>();
 

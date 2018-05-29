@@ -1,4 +1,4 @@
-package com.example.dana.projectefinal.disponibilitat;
+package com.example.dana.projectefinal;
 
 import java.util.ArrayList;
 import java.util.Arrays;

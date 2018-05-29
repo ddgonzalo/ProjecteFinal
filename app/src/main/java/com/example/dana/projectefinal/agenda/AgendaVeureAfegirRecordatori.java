@@ -11,7 +11,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,21 +47,30 @@ import org.greenrobot.eventbus.Subscribe;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 import static com.google.android.gms.common.api.GoogleApiClient.*;
 
 
-public class FragmentAgendaAfegirRecordatori extends Fragment implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener,
+public class AgendaVeureAfegirRecordatori extends Fragment implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener,
         OnConnectionFailedListener, ConnectionCallbacks {
 
-    boolean nouRecordatori;
+
+    boolean horaModificada;
+
+    final boolean NOU_RECORDATORI;
     boolean recordatoriEditat;
     String dataAntigaRecordatori; //per si el recordatori s'edita, saber quin era
 
+    View view;
     ConnexioAgenda bd;
     Objectes.Recordatori recordatoriActual;
 
     ViewSwitcher switcher;
+    ImageButton btEliminar;
     ImageButton btEnrere;
     Button btSuperior;
 
@@ -89,41 +97,30 @@ public class FragmentAgendaAfegirRecordatori extends Fragment implements DatePic
      * Constructor
      * @param nouRecordatori TRUE si estem creant un recordatori nou, FALSE si estem editant un recordatori existent
      */
-    public FragmentAgendaAfegirRecordatori() {
-        nouRecordatori = true;
+    public AgendaVeureAfegirRecordatori() {
+        NOU_RECORDATORI = true;
+        horaModificada = false;
     }
 
-    public FragmentAgendaAfegirRecordatori(Objectes.Recordatori recordatori) {
-        nouRecordatori = false;
+
+    public AgendaVeureAfegirRecordatori(Objectes.Recordatori recordatori) {
+        NOU_RECORDATORI = false;
         recordatoriActual = recordatori;
+        horaModificada = false;
     }
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.agenda_afegir_recordatori, null);
+        view = inflater.inflate(R.layout.agenda_afegir_recordatori, null);
         bd = new ConnexioAgenda(getContext());
 
+        inicialitzarViews();
 
-
-        switcher            = (ViewSwitcher) view.findViewById(R.id.my_switcher);
-
-        btEnrere            = view.findViewById(R.id.tornar_enrere);
-        btSuperior          = view.findViewById(R.id.guardar_recordatori);
-        canviarData         = view.findViewById(R.id.contenidorDataHora);
-        canviarEtiqueta     = view.findViewById(R.id.contenidorEtiqueta);
-
-        tvData              = view.findViewById(R.id.dataRecordatori);
-        tvHora              = view.findViewById(R.id.horaRecordatori);
-        tvEtiqueta          = view.findViewById(R.id.etiqueta_recordatori);
-
-        etiquetaText        = view.findViewById(R.id.etiqueta_text);
-        etiquetaRecordatori = view.findViewById(R.id.etiqueta_recordatori);
-        titolRecordatori    = view.findViewById(R.id.titol_recordatori);
-        textRecordatori     = view.findViewById(R.id.text);
-        ubicacioRecordatori = view.findViewById(R.id.ubicacio_recordatori);
-
-
+        //perquè els botons tinguin un efecte de fer-se més grans al fer-lis click
+        btEliminar.setOnTouchListener(Utilitats.onTouchListener(btEliminar));
+        btEnrere.setOnTouchListener(Utilitats.onTouchListener(btEnrere));
+        btSuperior.setOnTouchListener(Utilitats.onTouchListener(btSuperior));
 
         btEnrere.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -131,6 +128,15 @@ public class FragmentAgendaAfegirRecordatori extends Fragment implements DatePic
                 tornarEnrere(1);
             }
         });
+
+
+        btEliminar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mostrarConfirmacioEliminarRecordatori();
+            }
+        });
+
 
 
         btSuperior.setOnClickListener(new View.OnClickListener() {
@@ -155,7 +161,7 @@ public class FragmentAgendaAfegirRecordatori extends Fragment implements DatePic
 
                 Calendar now = Calendar.getInstance();
                 DatePickerDialog datePicker = DatePickerDialog.newInstance(
-                        FragmentAgendaAfegirRecordatori.this,
+                        AgendaVeureAfegirRecordatori.this,
                         now.get(Calendar.YEAR),
                         now.get(Calendar.MONTH),
                         now.get(Calendar.DAY_OF_MONTH)
@@ -181,8 +187,9 @@ public class FragmentAgendaAfegirRecordatori extends Fragment implements DatePic
         placesArrayAdapter = new PlaceArrayAdapter(getContext(), android.R.layout.simple_list_item_1, BOUNDS, null);
         ubicacioRecordatori.setAdapter(placesArrayAdapter);
 
-        if (nouRecordatori) {
+        if (NOU_RECORDATORI) {
             recordatoriEditat = false;
+            btEliminar.setVisibility(GONE);
             recordatoriActual = new Objectes.Recordatori();
 
             btSuperior.setText("Guardar");
@@ -205,6 +212,7 @@ public class FragmentAgendaAfegirRecordatori extends Fragment implements DatePic
         else {
             recordatoriEditat = false;
             btSuperior.setText("Editar");
+            btEliminar.setVisibility(GONE);
 
             canviarData.setClickable(false);
             canviarEtiqueta.setClickable(false);
@@ -220,7 +228,6 @@ public class FragmentAgendaAfegirRecordatori extends Fragment implements DatePic
                 Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(recordatoriActual.getData());
                 horaRecordatori = new SimpleDateFormat("HH:mm").format(date);
                 dataRecordatori = new SimpleDateFormat("yyyy-MM-dd").format(date);
-
 
                 int numeroMes = Integer.parseInt(new SimpleDateFormat("MM").format(date));
 
@@ -247,20 +254,46 @@ public class FragmentAgendaAfegirRecordatori extends Fragment implements DatePic
 
 //-- guardar recordatori ---------------------------------------------------------------------------
 
+    /**
+     * Enllaça les variables View amb les seves vistes respectives a l'arxiu XML
+     */
+    private void inicialitzarViews() {
+        switcher            = (ViewSwitcher) view.findViewById(R.id.my_switcher);
 
+        btEnrere            = view.findViewById(R.id.tornar_enrere);
+        btEliminar          = view.findViewById(R.id.eliminar_recordatori);
+        btSuperior          = view.findViewById(R.id.guardar_recordatori);
+        canviarData         = view.findViewById(R.id.contenidorDataHora);
+        canviarEtiqueta     = view.findViewById(R.id.contenidorEtiqueta);
+
+        tvData              = view.findViewById(R.id.dataRecordatori);
+        tvHora              = view.findViewById(R.id.horaRecordatori);
+        tvEtiqueta          = view.findViewById(R.id.etiqueta_recordatori);
+
+        etiquetaText        = view.findViewById(R.id.etiqueta_text);
+        etiquetaRecordatori = view.findViewById(R.id.etiqueta_recordatori);
+        titolRecordatori    = view.findViewById(R.id.titol_recordatori);
+        textRecordatori     = view.findViewById(R.id.text);
+        ubicacioRecordatori = view.findViewById(R.id.ubicacio_recordatori);
+    }
+
+
+    /**
+     * Comprova si estem a un nou recordatori o estem editant un i, en cas afirmatiu, guarda el recordatori.
+     * En canvi, si només estem veient un recordatori, mostra la pantalla d'edició del recordatori.
+     */
     private void realitzarAccioEditarOGuardar() {
-        if (nouRecordatori) guardarRecordatori();
+        if (NOU_RECORDATORI || recordatoriEditat) guardarRecordatori();
         else editarRecordatori();
     }
+
 
     /**
      * Comprova si el recordatori compleix els requisits per ser guardat a la base de dades i,
      * si els compleix, el guarda, sinó mostra per pantalla un missatge d'error
      */
     private void guardarRecordatori() {
-
         if (potGuardar()) {
-
             recordatoriActual.setTitol(titolRecordatori.getText().toString());
             recordatoriActual.setText(textRecordatori.getText().toString());
             recordatoriActual.setData(dataRecordatori + " " + horaRecordatori);
@@ -269,8 +302,8 @@ public class FragmentAgendaAfegirRecordatori extends Fragment implements DatePic
             recordatoriActual.setTipusRecordatori(etiquetaRecordatori.getText().toString());
 
 
-            if (recordatoriEditat) bd.editarRecordatori(recordatoriActual, dataAntigaRecordatori);
-            else bd.guardarRecordatori(recordatoriActual);
+            if (NOU_RECORDATORI) bd.guardarRecordatori(recordatoriActual);
+            else bd.editarRecordatori(recordatoriActual, dataAntigaRecordatori);
 
             LottieAnimationView lottie = switcher.findViewById(R.id.animation_view);
 
@@ -294,7 +327,7 @@ public class FragmentAgendaAfegirRecordatori extends Fragment implements DatePic
                     getFragmentManager().popBackStack(); //perquè no es vagin acumulant fragments
 
                     getFragmentManager().beginTransaction()
-                            .replace(R.id.frameLayout, new FragmentAgenda())
+                            .replace(R.id.frameLayout, new AgendaMain())
                             .commit();
 
                     MainActivity.canviarPestaña(1);
@@ -309,12 +342,14 @@ public class FragmentAgendaAfegirRecordatori extends Fragment implements DatePic
 
             switcher.showNext();
             lottie.playAnimation();
+            horaModificada = false;
         }
 
         else { //No compleix algún requisit per guardar el recordatori
             Utilitats.mostrarMissatgeError(getContext(), "No s'ha pogut guardar el recordatori,", missatgeErrorGuardar);
         }
     }
+
 
     /**
      * Comprova si el recordatori compleix els requisits per poder ser guardat a la base de dades
@@ -348,6 +383,20 @@ public class FragmentAgendaAfegirRecordatori extends Fragment implements DatePic
             return false;
         }
 
+        if (horaModificada) {
+            List<String> dates = new LinkedList<>();
+
+            for (Objectes.Recordatori r : ConnexioAgenda.llistaAvui) dates.add(r.getData());
+            for (Objectes.Recordatori r : ConnexioAgenda.llistaDema) dates.add(r.getData());
+            for (Objectes.Recordatori r : ConnexioAgenda.llistaSetmana) dates.add(r.getData());
+            for (Objectes.Recordatori r : ConnexioAgenda.llistaMes) dates.add(r.getData());
+
+            if (dates.contains(dataRecordatori + " " + horaRecordatori)) {
+                missatgeErrorGuardar = "ja hi ha un recordatori per aquesta data i hora.";
+                return false;
+            }
+        }
+
         return true;
     }
 
@@ -355,9 +404,13 @@ public class FragmentAgendaAfegirRecordatori extends Fragment implements DatePic
 //-- editar recordatori ----------------------------------------------------------------------------
 
 
+    /**
+     * Permet editar el recordatori fent que el títol, l'ubicació, l'etiqueta, la data i el text
+     * del recordatori siguin editables
+     */
     private void editarRecordatori() {
-        nouRecordatori = true;
         recordatoriEditat = true;
+        btEliminar.setVisibility(VISIBLE);
         dataAntigaRecordatori = recordatoriActual.getData();
 
         btSuperior.setText("Guardar");
@@ -376,11 +429,11 @@ public class FragmentAgendaAfegirRecordatori extends Fragment implements DatePic
      * @param idPestaña Pestaña a la que es vol canviar
      */
     private void tornarEnrere(final int idPestaña) {
-        if (nouRecordatori) {
+        if (recordatoriEditat) {
             LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
 
-            View dview = inflater.inflate(R.layout.agenda_afegir_recordatori_confirmacio, null);
+            View dview = inflater.inflate(R.layout.popup_confirmacio, null);
 
             final Dialog dialog = new Dialog(getContext());
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -412,7 +465,7 @@ public class FragmentAgendaAfegirRecordatori extends Fragment implements DatePic
                     getFragmentManager().popBackStack(); //perquè no es vagin acumulant fragments
 
                     getFragmentManager().beginTransaction()
-                            .replace(R.id.frameLayout, new FragmentAgenda())
+                            .replace(R.id.frameLayout, new AgendaMain())
                             .commit();
 
                     MainActivity.canviarPestaña(idPestaña);
@@ -430,7 +483,7 @@ public class FragmentAgendaAfegirRecordatori extends Fragment implements DatePic
             getFragmentManager().popBackStack(); //perquè no es vagin acumulant fragments
 
             getFragmentManager().beginTransaction()
-                    .replace(R.id.frameLayout, new FragmentAgenda())
+                    .replace(R.id.frameLayout, new AgendaMain())
                     .commit();
 
             MainActivity.canviarPestaña(idPestaña);
@@ -488,21 +541,100 @@ public class FragmentAgendaAfegirRecordatori extends Fragment implements DatePic
     }
 
 
+//-- Eliminar el recordatori -----------------------------------------------------------------------
+
+
+    /**
+     * Mostra per pantalla un popup per confirmar que el recordatori es vol eliminar de la base de dades
+     */
+    private void mostrarConfirmacioEliminarRecordatori() {
+        LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+
+        View dview = inflater.inflate(R.layout.popup_confirmacio, null);
+
+        final Dialog dialog = new Dialog(getContext());
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(dview);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+
+        dialog.show();
+
+
+        Button btCancelar = (Button) dview.findViewById(R.id.cancelar);
+        Button btAcceptar = (Button) dview.findViewById(R.id.acceptar);
+        TextView primeraLinia   = (TextView) dview.findViewById(R.id.primera_linia);
+        TextView segonaLinia    = (TextView) dview.findViewById(R.id.segona_linia);
+
+        primeraLinia.setText("Segur que vols eliminar aquest recordatori?");
+        segonaLinia.setText("Un cop eliminat, no es podrà recuperar.");
+
+
+        btCancelar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+
+
+        btAcceptar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                //Tenca la connexió amb Google API
+                googleApiClient.stopAutoManage(getActivity());
+                googleApiClient.disconnect();
+
+                getFragmentManager().popBackStack(); //perquè no es vagin acumulant fragments
+
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.frameLayout, new AgendaMain())
+                        .commit();
+
+                bd.eliminarRecordatori(recordatoriActual.getData());
+                MainActivity.canviarPestaña(1);
+
+                dialog.dismiss();
+            }
+        });
+    }
+
+
 //-- Triar data i hora del recordatori -------------------------------------------------------------
 
-    //quan s'ha triat una hora per el recordatori
+
+    /**
+     * Què fer quan s'ha triat una hora per el recordatori
+     * @param view Dialog on es mostra el Timepicker
+     * @param hourOfDay Hora triada (0-24)
+     * @param minute Minuts triats (0-60)
+     * @param second Segons triats. Sempre és "0"
+     */
     @Override
     public void onTimeSet(TimePickerDialog view, int hourOfDay, int minute, int second) {
-        tvHora.setText(hourOfDay + ":" + minute);
-        horaRecordatori = hourOfDay + ":" + minute + ":" + second;
+
+        horaModificada  = true;
+
+        String strHora = (hourOfDay < 10) ? "0" + String.valueOf(hourOfDay) : String.valueOf(hourOfDay);
+        String strMinuts = (minute < 10) ? "0" + String.valueOf(minute) : String.valueOf(minute);
+        String strSegons = (second < 10) ? "0" + String.valueOf(second) : String.valueOf(second);
+
+        tvHora.setText(strHora + ":" + strMinuts);
+        horaRecordatori = strHora + ":" + strMinuts + ":" + strSegons;
     }
 
 
 
-    //quan s'ha triat una data per el recordatori
+    /**
+     * Què fer quan s'ha triat una data per el recordatori
+     * @param view Dialog on es mostra el DatePicker
+     * @param year Any triat
+     * @param monthOfYear Més triat, amb índex 0 (0-11)
+     * @param dayOfMonth Día del mes triat (0-31 depenent del mes)
+     */
     @Override
     public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
-
 
         String mes = Utilitats.getNomMes(++monthOfYear);
 
@@ -510,7 +642,6 @@ public class FragmentAgendaAfegirRecordatori extends Fragment implements DatePic
         //per poder-ho comparar amb la data actual, el camp "mes" ha de tenir dos dígits
         if (monthOfYear<10) dataRecordatori = year + "-0" + monthOfYear + "-" + dayOfMonth;
         else dataRecordatori = year + "-" + monthOfYear + "-" + dayOfMonth; //format que es guardarà a la base de dades
-
 
         //per saber si la data triada és la data actual ("Avui")
         if (dataRecordatori.equals(new SimpleDateFormat("yyyy-MM-dd").format(new Date()))) {
@@ -524,7 +655,7 @@ public class FragmentAgendaAfegirRecordatori extends Fragment implements DatePic
         Calendar now = Calendar.getInstance();
 
         TimePickerDialog timePicker = TimePickerDialog.newInstance(
-                FragmentAgendaAfegirRecordatori.this,
+                AgendaVeureAfegirRecordatori.this,
                 now.get(Calendar.HOUR),
                 now.get(Calendar.MINUTE),
                 true

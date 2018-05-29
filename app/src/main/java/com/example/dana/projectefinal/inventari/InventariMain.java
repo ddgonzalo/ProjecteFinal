@@ -8,8 +8,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.example.dana.projectefinal.R;
+import com.example.dana.projectefinal.Utilitats;
 
-public class FragmentInventari extends Fragment implements View.OnClickListener{
+public class InventariMain extends Fragment implements View.OnClickListener {
 
     Button veureInventari, lloguers, registrarEntrades;
 
@@ -25,6 +26,9 @@ public class FragmentInventari extends Fragment implements View.OnClickListener{
         lloguers.setOnClickListener(this);
         registrarEntrades.setOnClickListener(this);
 
+        veureInventari.setOnTouchListener(Utilitats.onTouchListener(veureInventari));
+        lloguers.setOnTouchListener(Utilitats.onTouchListener(lloguers));
+        registrarEntrades.setOnTouchListener(Utilitats.onTouchListener(registrarEntrades));
 
         return view;
     }
@@ -35,9 +39,9 @@ public class FragmentInventari extends Fragment implements View.OnClickListener{
         Fragment fragment = null;
 
         switch (view.getId()) {
-            case R.id.bt_inventari: fragment = new FragmentInventariVeure(); break;
-            case R.id.bt_lloguers_ventes: fragment = new FragmentInventariLloguersVentes(); break;
-            case R.id.bt_entrades: fragment = new FragmentInventariRegistrarEntrada(); break;
+            case R.id.bt_inventari: fragment = new InventariVeureLlistaArticles(); break;
+            case R.id.bt_lloguers_ventes: fragment = new InventariLloguersVentes(); break;
+            case R.id.bt_entrades: fragment = new InventariRegistrarEntrada(); break;
         }
 
         getFragmentManager().beginTransaction()

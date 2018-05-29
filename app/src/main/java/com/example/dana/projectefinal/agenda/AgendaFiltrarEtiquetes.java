@@ -11,7 +11,7 @@ import android.widget.TextView;
 import com.example.dana.projectefinal.ConnexioDades;
 import com.example.dana.projectefinal.R;
 
-public class FragmentAgendaFiltrarEtiquetes extends Fragment{
+public class AgendaFiltrarEtiquetes extends Fragment{
 
     LinearLayout llistaCardviews;
     ConnexioAgenda connexio;
@@ -34,7 +34,7 @@ public class FragmentAgendaFiltrarEtiquetes extends Fragment{
             LinearLayout llistaRecordatoris = cardview.findViewById(R.id.llista_agenda);
 
             cardviewTitol.setText(nomEtiqueta);
-            connexio.mostrarRecordatorisEtiqueta(nomEtiqueta, llistaRecordatoris);
+            connexio.mostrarRecordatorisEtiqueta(getActivity().getSupportFragmentManager(), nomEtiqueta, llistaRecordatoris);
 
             llistaCardviews.addView(cardview);
         }

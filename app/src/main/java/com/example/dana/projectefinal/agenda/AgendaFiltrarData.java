@@ -9,7 +9,7 @@ import android.widget.LinearLayout;
 
 import com.example.dana.projectefinal.R;
 
-public class FragmentAgendaFiltrarData extends Fragment {
+public class AgendaFiltrarData extends Fragment {
 
     ConnexioAgenda bd;
 

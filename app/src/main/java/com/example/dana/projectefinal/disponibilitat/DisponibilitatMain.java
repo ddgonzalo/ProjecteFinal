@@ -12,6 +12,8 @@ import android.widget.TextView;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.example.dana.projectefinal.ConnexioDades;
+import com.example.dana.projectefinal.FilterWithSpaceAdapter;
+import com.example.dana.projectefinal.Objectes;
 import com.example.dana.projectefinal.R;
 import com.example.dana.projectefinal.Utilitats;
 import com.rengwuxian.materialedittext.MaterialAutoCompleteTextView;
@@ -28,7 +30,7 @@ import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
 
-public class FragmentDisponibilitat extends Fragment implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener, View.OnClickListener{
+public class DisponibilitatMain extends Fragment implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener, View.OnClickListener{
 
     View view;
     ConnexioDisponibilitat connexio;
@@ -87,15 +89,18 @@ public class FragmentDisponibilitat extends Fragment implements DatePickerDialog
         //Carrega la llista de bicicletes i scooters que hi ha al magatzem
         llistaNomsBicicletes = new LinkedList<>();
 
-        for (Integer idBici : ConnexioDades.llistaBicicletes.keySet()) {
-            llistaNomsBicicletes.add (idBici + " - " + ConnexioDades.llistaBicicletes.get(idBici));
+        for (Integer idBici : ConnexioDades.magatzemBicis.keySet()) {
+            Objectes.Article bici =  ConnexioDades.llistaBicicletes.get(ConnexioDades.magatzemBicis.get(idBici));
+            llistaNomsBicicletes.add (idBici + " - " + bici.getMarca() + " " + bici.getModel());
         }
 
         llistaNomsScooters = new LinkedList<>();
 
-        for (Integer idScooter: ConnexioDades.llistaScooters.keySet()) {
-            llistaNomsScooters.add(idScooter + " - " + ConnexioDades.llistaScooters.get(idScooter));
+        for (Integer idScooter: ConnexioDades.magatzemScooters.keySet()) {
+            Objectes.Article scooter =  ConnexioDades.llistaScooters.get(ConnexioDades.magatzemScooters.get(idScooter));
+            llistaNomsScooters.add(idScooter + " - " + scooter.getMarca() + " " + scooter.getModel());
         }
+
 
         adapter = new FilterWithSpaceAdapter<> (getContext(),android.R.layout.simple_list_item_1, llistaNomsBicicletes);
         nomArticle.setThreshold(1);
@@ -106,14 +111,14 @@ public class FragmentDisponibilitat extends Fragment implements DatePickerDialog
         calendarNow = Calendar.getInstance();
 
         datePicker = DatePickerDialog.newInstance(
-                FragmentDisponibilitat.this,
+                DisponibilitatMain.this,
                 calendarNow.get(Calendar.YEAR),
                 calendarNow.get(Calendar.MONTH),
                 calendarNow.get(Calendar.DAY_OF_MONTH)
         );
 
         timePicker = TimePickerDialog.newInstance(
-                FragmentDisponibilitat.this,
+                DisponibilitatMain.this,
                 calendarNow.get(Calendar.HOUR),
                 calendarNow.get(Calendar.MINUTE),
                 true
@@ -125,6 +130,7 @@ public class FragmentDisponibilitat extends Fragment implements DatePickerDialog
             public void onClick(View view) {
                 contenidorUnDia.setVisibility(VISIBLE);
                 contenidorMesDunDia.setVisibility(GONE);
+                layoutResposta.setVisibility(GONE);
             }
         });
 
@@ -133,9 +139,13 @@ public class FragmentDisponibilitat extends Fragment implements DatePickerDialog
             public void onClick(View view) {
                 contenidorUnDia.setVisibility(GONE);
                 contenidorMesDunDia.setVisibility(VISIBLE);
+                layoutResposta.setVisibility(GONE);
             }
         });
 
+
+        btComprovarDisponibilitat.setOnTouchListener(Utilitats.onTouchListener(btComprovarDisponibilitat));
+        btLlogar.setOnTouchListener(Utilitats.onTouchListener(btLlogar));
 
         return view;
     }
@@ -203,11 +213,13 @@ public class FragmentDisponibilitat extends Fragment implements DatePickerDialog
      * Si l'article que es vol buscar no existeix, mostra per pantalla un missatge informant de l'error.
      */
     public void comprobarDisponibilitatArticle() {
+        textLlogat.setVisibility(GONE); //per si ja s'està mostrant
+        layoutResposta.setVisibility(GONE);
+
         //Primer comprova si l'article triat existeix a la base de dades
         if (rbBicicleta.isChecked()) {
             if (!llistaNomsBicicletes.contains(nomArticle.getText().toString())) {
                 Utilitats.mostrarMissatgeError(getContext(), "L'article no existeix,", "si us plau, tria un altre.");
-                //mostrarMissatgeError();
                 return;
             }
         }
@@ -225,6 +237,7 @@ public class FragmentDisponibilitat extends Fragment implements DatePickerDialog
             connexio.comprovarDisponibilitatBicicleta(textLlogat, btLlogar, animationView, idArticle, strDataInici + " " + strHoraInici, strDataFi + " " + strHoraFi);
         }
         else {
+            layoutResposta.setVisibility(VISIBLE);
             connexio.comprovarDisponibilitatScooter(textLlogat, btLlogar, animationView, idArticle, strDataInici + " " + strHoraInici, strDataFi + " " + strHoraFi);
         }
     }

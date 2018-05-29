@@ -1,34 +1,27 @@
 package com.example.dana.projectefinal.inventari;
 
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioButton;
-import android.widget.TextView;
 
 import com.example.dana.projectefinal.ConnexioDades;
 import com.example.dana.projectefinal.Objectes;
 import com.example.dana.projectefinal.R;
-import com.example.dana.projectefinal.agenda.FragmentAgenda;
+import com.example.dana.projectefinal.Utilitats;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public class FragmentInventariVeure extends Fragment {
+public class InventariVeureLlistaArticles extends Fragment {
 
     ImageButton btTornarEnrere;
 
@@ -47,6 +40,8 @@ public class FragmentInventariVeure extends Fragment {
         buscadorArticle     = (EditText) view.findViewById(R.id.buscador_article);
         rbVeureBicicletes   = (RadioButton) view.findViewById(R.id.rb_bicicletes);
         rbVeureScooters     = (RadioButton) view.findViewById(R.id.rb_scooters);
+
+        //llistaArticles és Listview i no LinearLayout perquè sinó no es podria fer la cerca dinàmica
         llistaArticles      = (ListView) view.findViewById(R.id.llista_articles);
 
         carregarLlistes();
@@ -75,10 +70,12 @@ public class FragmentInventariVeure extends Fragment {
                 getFragmentManager().popBackStack(); //perquè no es vagin acumulant fragments
 
                 getFragmentManager().beginTransaction()
-                        .replace(R.id.frameLayout, new FragmentInventari())
+                        .replace(R.id.frameLayout, new InventariMain())
                         .commit();
             }
         });
+
+        btTornarEnrere.setOnTouchListener(Utilitats.onTouchListener(btTornarEnrere));
 
 
         return view;
@@ -90,7 +87,6 @@ public class FragmentInventariVeure extends Fragment {
         llistaScooters = new LinkedList<>();
 
         for (Integer idBici : ConnexioDades.magatzemBicis.keySet()) {
-            Log.i("BICICS", "Afegint " + idBici);
             Objectes.Article bicicleta = ConnexioDades.llistaBicicletes.get(ConnexioDades.magatzemBicis.get(idBici));
             llistaBicicletes.add(idBici + "-" + bicicleta.getMarca() + " " + bicicleta.getModel());
         }

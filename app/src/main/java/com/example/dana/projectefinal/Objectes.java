@@ -28,6 +28,8 @@ public class Objectes {
         //public void setColor(String color) {this.color = color;}
     }
 
+
+
     public static class Article {
         private String id;
         private String marca;
@@ -41,7 +43,6 @@ public class Objectes {
         public String getMarca() {
             return marca;
         }
-
         public void setMarca(String marca) {
             this.marca = marca;
         }
@@ -49,7 +50,6 @@ public class Objectes {
         public String getModel() {
             return model;
         }
-
         public void setModel(String model) {
             this.model = model;
         }
@@ -57,7 +57,6 @@ public class Objectes {
         public String getVelocitat() {
             return velocitat;
         }
-
         public void setVelocitat(String velocitat) {
             this.velocitat = velocitat;
         }
@@ -65,7 +64,6 @@ public class Objectes {
         public String getAutonomia() {
             return autonomia;
         }
-
         public void setAutonomia(String autonomia) {
             this.autonomia = autonomia;
         }
@@ -73,7 +71,6 @@ public class Objectes {
         public String getBateria() {
             return bateria;
         }
-
         public void setBateria(String bateria) {
             this.bateria = bateria;
         }
@@ -81,7 +78,6 @@ public class Objectes {
         public double getPes() {
             return pes;
         }
-
         public void setPes(double pes) {
             this.pes = pes;
         }
@@ -89,18 +85,50 @@ public class Objectes {
         public double getPreu() {
             return preu;
         }
-
         public void setPreu(double preu) {
             this.preu = preu;
         }
 
-        public String getId() {
-
-            return id;
-        }
-
+        public String getId() {return id; }
         public void setId(String id) {
             this.id = id;
         }
+    }
+
+
+
+    public static class Lloguer {
+        private String id;
+        private String dataInici;
+        private String dataFi;
+        private String llocEntrega;
+        private String llocRecollida;
+        private String client;
+        private double preu;
+        private int totalArticles;
+
+        public String getId() {return id;}
+        public void setId(String id) {this.id = id;}
+
+        public String getDataInici() {return dataInici;}
+        public void setDataInici(String dataInici) {this.dataInici = dataInici;}
+
+        public String getDataFi() {return dataFi;}
+        public void setDataFi(String dataFi) {this.dataFi = dataFi;}
+
+        public String getLlocEntrega() {return llocEntrega;}
+        public void setLlocEntrega(String llocEntrega) {this.llocEntrega = llocEntrega;}
+
+        public String getLlocRecollida() {return llocRecollida;}
+        public void setLlocRecollida(String llocRecollida) {this.llocRecollida = llocRecollida;}
+
+        public String getClient() {return client;}
+        public void setClient(String client) {this.client = client;}
+
+        public double getPreu() {return preu;}
+        public void setPreu(double preu) {this.preu = preu;}
+
+        public int getTotalArticles() {return totalArticles;}
+        public void setTotalArticles(int totalArticles) {this.totalArticles = totalArticles;}
     }
 }

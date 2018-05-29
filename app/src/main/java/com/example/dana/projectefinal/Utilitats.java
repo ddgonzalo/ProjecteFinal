@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -11,6 +12,13 @@ import android.widget.TextView;
 
 public class Utilitats {
 
+
+    /**
+     * Mostra per pantalla un missatge d'error de dues línies
+     * @param context Contexte on es troba la classe que ha cridat la funció
+     * @param strPrimeraLinia Primera línia del missatge
+     * @param strSegonaLinia Segona línia del missatge
+     */
     public static void mostrarMissatgeError(Context context, String strPrimeraLinia, String strSegonaLinia) {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -42,6 +50,11 @@ public class Utilitats {
     }
 
 
+    /**
+     * Retorna el nom d'un mes en format String donada la seva posició al calendari
+     * @param numeroMes Posició del mes al calendari (1-12)
+     * @return Nom del mes en format String
+     */
     public static String getNomMes(int numeroMes) {
         String mes = "";
 
@@ -61,6 +74,34 @@ public class Utilitats {
         }
 
         return mes;
+    }
+
+
+    /**
+     * Retorna un OnTouchListener que fa que, al fer-se click a un View passat per paràmetres,
+     * aquesta amplii el seu tamany en 25%
+     * @param v Vista sobre la que actuarà l'OnTouchListener
+     * @return View.OnTouchListener
+     */
+    public static View.OnTouchListener onTouchListener(final View v) {
+
+        View.OnTouchListener listener = new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+                    v.setScaleX((float)1.25);
+                    v.setScaleY((float)1.25);
+
+                }
+                else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+                    v.setScaleX((float)1);
+                    v.setScaleY((float)1);
+                }
+                return false;
+            }
+        };
+
+        return listener;
     }
 
 }

@@ -11,8 +11,9 @@ import android.widget.ImageButton;
 import android.widget.RadioButton;
 
 import com.example.dana.projectefinal.R;
+import com.example.dana.projectefinal.Utilitats;
 
-public class FragmentAgenda extends Fragment {
+public class AgendaMain extends Fragment {
 
     SharedPreferences sharedPreferences;
 
@@ -32,11 +33,13 @@ public class FragmentAgenda extends Fragment {
         filtrarPerData          = view.findViewById(R.id.filtrar_per_data);
         filtrarPerEtiquetes     = view.findViewById(R.id.filtrar_per_etiquetes);
 
+        afegirRecordatori.setOnTouchListener(Utilitats.onTouchListener(afegirRecordatori));
+
         afegirRecordatori.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 getFragmentManager().beginTransaction()
-                        .replace(R.id.frameLayout, new FragmentAgendaAfegirRecordatori())
+                        .replace(R.id.frameLayout, new AgendaVeureAfegirRecordatori())
                         .addToBackStack(null)
                         .commit();
             }
@@ -46,14 +49,14 @@ public class FragmentAgenda extends Fragment {
         filtrarPerData.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                canviarFiltre(true, new FragmentAgendaFiltrarData());
+                canviarFiltre(true, new AgendaFiltrarData());
             }
         });
 
         filtrarPerEtiquetes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                canviarFiltre(false, new FragmentAgendaFiltrarEtiquetes());
+                canviarFiltre(false, new AgendaFiltrarEtiquetes());
             }
         });
 
@@ -89,7 +92,7 @@ public class FragmentAgenda extends Fragment {
         if (sharedPreferences.getBoolean("agenda_filtrar_data", true)) {
 
             getChildFragmentManager().beginTransaction()
-                    .replace(R.id.agenda_frame_layout, new FragmentAgendaFiltrarData())
+                    .replace(R.id.agenda_frame_layout, new AgendaFiltrarData())
                     .commit();
 
             filtrarPerData.setChecked(true);
@@ -97,7 +100,7 @@ public class FragmentAgenda extends Fragment {
         else {
 
             getChildFragmentManager().beginTransaction()
-                    .replace(R.id.agenda_frame_layout, new FragmentAgendaFiltrarEtiquetes())
+                    .replace(R.id.agenda_frame_layout, new AgendaFiltrarEtiquetes())
                     .commit();
 
             filtrarPerEtiquetes.setChecked(true);

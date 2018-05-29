@@ -5,28 +5,24 @@ import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.dana.projectefinal.ConnexioDades;
-import com.example.dana.projectefinal.MainActivity;
 import com.example.dana.projectefinal.Objectes;
 import com.example.dana.projectefinal.R;
 import com.example.dana.projectefinal.Utilitats;
-import com.example.dana.projectefinal.agenda.FragmentAgenda;
-import com.google.gson.Gson;
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.squareup.picasso.Picasso;
 
-public class FragmentInventariDetallArticle extends Fragment {
+public class InventariDetallArticle extends Fragment {
     View view;
     Objectes.Article articleActual;
     String strIdArticle;
@@ -76,6 +72,17 @@ public class FragmentInventariDetallArticle extends Fragment {
             }
         });
 
+
+        fotoArticle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                veureImatgeAmpliada();
+            }
+        });
+
+        btTornarEnrere.setOnTouchListener(Utilitats.onTouchListener(btTornarEnrere));
+        btEditarGuardar.setOnTouchListener(Utilitats.onTouchListener(btEditarGuardar));
+
         mostrarDades();
         return view;
     }
@@ -98,6 +105,31 @@ public class FragmentInventariDetallArticle extends Fragment {
     }
 
 //--------------------------------------------------------------------------------------------------
+
+
+    public void veureImatgeAmpliada() {
+        View dview = getLayoutInflater().inflate(R.layout.inventari_detall_article_foto, null);
+
+        final Dialog dialog = new Dialog(getContext());
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(dview);
+        //dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+
+        dialog.show();
+
+        ImageView fotoAmpliada      = (ImageView) dview.findViewById(R.id.foto_article);
+        LinearLayout dummyLayout    = (LinearLayout) dview.findViewById(R.id.dummy_layout);
+
+        Picasso.get().load(ConnexioDades.SERVIDOR + articleActual.getId() + ".jpg").fit().centerInside().into(fotoAmpliada);
+
+        //perquè quan es fagi click a qualsevol part de la imatge, el popup es tenqui
+        dummyLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+    }
 
     private void realitzarAccioEditarOGuardar() {
         if (estaEditant) guardarArticle();
@@ -196,7 +228,7 @@ public class FragmentInventariDetallArticle extends Fragment {
             LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
 
-            View dview = inflater.inflate(R.layout.agenda_afegir_recordatori_confirmacio, null);
+            View dview = inflater.inflate(R.layout.popup_confirmacio, null);
 
             final Dialog dialog = new Dialog(getContext());
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -223,7 +255,7 @@ public class FragmentInventariDetallArticle extends Fragment {
                     getFragmentManager().popBackStack(); //perquè no es vagin acumulant fragments
 
                     getFragmentManager().beginTransaction()
-                            .replace(R.id.frameLayout, new FragmentInventariVeure())
+                            .replace(R.id.frameLayout, new InventariVeureLlistaArticles())
                             .commit();
 
                     dialog.dismiss();
@@ -235,7 +267,7 @@ public class FragmentInventariDetallArticle extends Fragment {
             getFragmentManager().popBackStack(); //perquè no es vagin acumulant fragments
 
             getFragmentManager().beginTransaction()
-                    .replace(R.id.frameLayout, new FragmentInventariVeure())
+                    .replace(R.id.frameLayout, new InventariVeureLlistaArticles())
                     .commit();
         }
     }

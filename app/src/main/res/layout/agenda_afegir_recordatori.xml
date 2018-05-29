@@ -184,6 +184,32 @@
         app:layout_constraintTop_toTopOf="@+id/titol"
         app:srcCompat="@drawable/ic_enrere" />
 
+    <TextView
+        android:id="@+id/titol3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="8dp"
+        android:fontFamily="@font/sf_pro_display_bold"
+        android:text="Nou recordatori"
+        android:textColor="@android:color/black"
+        android:textSize="34sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@+id/tornar_enrere"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/separador"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="2dp"
+        android:background="@color/grisClar"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/titol" />
+
     <LinearLayout
         android:id="@+id/separador"
         android:layout_width="match_parent"
@@ -200,7 +226,7 @@
         android:id="@+id/titol_recordatori"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
+        android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="32dp"
         android:ems="10"
@@ -208,7 +234,7 @@
         android:hint="Títol del recordatori"
         android:inputType="textPersonName"
         android:textSize="22sp"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/eliminar_recordatori"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/separador"
         app:met_maxCharacters="30" />
@@ -279,5 +305,17 @@
         app:layout_constraintBottom_toBottomOf="@+id/titol"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/titol" />
+
+    <ImageButton
+        android:id="@+id/eliminar_recordatori"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginEnd="8dp"
+        android:background="@android:color/transparent"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="@+id/titol_recordatori"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/titol_recordatori"
+        app:srcCompat="@drawable/ic_basura" />
 
 </android.support.constraint.ConstraintLayout>
