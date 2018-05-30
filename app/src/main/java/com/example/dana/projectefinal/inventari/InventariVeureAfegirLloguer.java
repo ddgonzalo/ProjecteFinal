@@ -1,16 +1,19 @@
 package com.example.dana.projectefinal.inventari;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
+import android.content.Context;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.Filter;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -20,20 +23,43 @@ import com.example.dana.projectefinal.FilterWithSpaceAdapter;
 import com.example.dana.projectefinal.Objectes;
 import com.example.dana.projectefinal.R;
 import com.example.dana.projectefinal.Utilitats;
+import com.example.dana.projectefinal.PlaceArrayAdapter;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.location.places.PlaceBuffer;
+import com.google.android.gms.location.places.Places;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
+import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
-public class InventariVeureAfegirLloguer extends Fragment implements View.OnClickListener {
+public class InventariVeureAfegirLloguer extends Fragment implements View.OnClickListener, DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener,
+        GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks {
 
     final boolean NOU_LLOGUER;
-    boolean estaEditant;
+    boolean lloguerEditat;
+
+    //variables per si venim de "DISPONIBILITAT" després d'haver comprovat si un article estava disponible
+    boolean venimDesdeDisponibilitat;
+    boolean articleInicialEsBici;
+    String articleInicial;
+
     Objectes.Lloguer lloguerActual;
+    ConnexioInventari connexio;
     View view;
 
+    TextView titol;
     ImageButton btTornarEnrere;
     Button btRealitzarAccio;
 
@@ -42,12 +68,26 @@ public class InventariVeureAfegirLloguer extends Fragment implements View.OnClic
     AutoCompleteTextView acClient, acLlocEntrega, acLlocRecollida;
 
     LinearLayout llistaArticles;
-    ConstraintLayout ultimaFilaAfegirArticle;
+    ConstraintLayout layoutAfegirArticle;
     TextView btAfegirArticle;
     AutoCompleteTextView acArticleNou;
 
 
+    FilterWithSpaceAdapter<String> adapter;
     List<String> llistaBicicletesScooters;
+
+    List<String> llistaBicicletesLlogades, llistaScootersLlogats;
+
+    String strDataInici, strDataFi, strHoraInici, strHoraFi;
+
+    TimePickerDialog timePicker;
+    DatePickerDialog datePicker;
+    GoogleApiClient googleApiClient;
+    PlaceArrayAdapter placesArrayAdapter;
+    final LatLngBounds BOUNDS = new LatLngBounds(new LatLng(37.398160, -122.180831), new LatLng(37.430610, -121.972090));
+
+    String motiuErrorGuardar;
+
 
     /**
      * Constructor per quan es vol crear un nou recordatori
@@ -55,7 +95,8 @@ public class InventariVeureAfegirLloguer extends Fragment implements View.OnClic
     public InventariVeureAfegirLloguer() {
         this.lloguerActual = new Objectes.Lloguer();
         NOU_LLOGUER = true;
-        estaEditant = false;
+        lloguerEditat = false;
+        venimDesdeDisponibilitat = false;
     }
 
 
@@ -67,24 +108,50 @@ public class InventariVeureAfegirLloguer extends Fragment implements View.OnClic
     public InventariVeureAfegirLloguer(Objectes.Lloguer lloguerActual) {
         this.lloguerActual = lloguerActual;
         NOU_LLOGUER = false;
-        estaEditant = false;
+        lloguerEditat = false;
+        venimDesdeDisponibilitat = false;
     }
+
+    /**
+     * Constructor per quan venim de la pantalla "DISPONIBILITAT"
+     * @param esBici <code>true</code> si l'article que es vol llogar és una bicicleta o un scooter
+     * @param idArticle ID de l'article que es vol llogar
+     * @param dataHoraInici Data i hora de l'inici del lloguer en format "yyyy-MM-dd HH:mm:ss"
+     * @param dataHoraFi Data i hora del fi del lloguer en format "yyyy-MM-dd HH:mm:ss"
+     */
+    @SuppressLint("ValidFragment")
+    public InventariVeureAfegirLloguer(boolean esBici, String idArticle, String dataHoraInici, String dataHoraFi) {
+        this.lloguerActual = new Objectes.Lloguer();
+        NOU_LLOGUER = true;
+        lloguerEditat = false;
+        venimDesdeDisponibilitat = true;
+
+        if (esBici) articleInicial = idArticle + " ";
+        else articleInicial = idArticle;
+
+        lloguerActual.setDataInici(dataHoraInici);
+        lloguerActual.setDataFi(dataHoraFi);
+    }
+
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.inventari_afegir_lloguer, null);
+        connexio = new ConnexioInventari(getContext());
 
         inicialitzarViews();
-        desactivarViews();
 
-        llistaArticles.addView(ultimaFilaAfegirArticle);
+        //llistaArticles.addView(layoutAfegirArticle);
 
         //Es podrà afegir qualsevol article, sigui bicicleta o scooter
         llistaBicicletesScooters = new LinkedList<>();
+        llistaBicicletesLlogades = new LinkedList<>();
+        llistaScootersLlogats = new LinkedList<>();
+
         for (Integer idBici : ConnexioDades.magatzemBicis.keySet()) {
             Objectes.Article bici =  ConnexioDades.llistaBicicletes.get(ConnexioDades.magatzemBicis.get(idBici));
-            llistaBicicletesScooters.add (idBici + " - " + bici.getMarca() + " " + bici.getModel());
+            llistaBicicletesScooters.add (idBici + " - " + bici.getMarca() + " " + bici.getModel() + " "); //si té un espai al final, vol dir que és una bicicleta
         }
 
         for (Integer idScooter: ConnexioDades.magatzemScooters.keySet()) {
@@ -92,13 +159,56 @@ public class InventariVeureAfegirLloguer extends Fragment implements View.OnClic
             llistaBicicletesScooters.add(idScooter + " - " + scooter.getMarca() + " " + scooter.getModel());
         }
 
-        FilterWithSpaceAdapter<String> adapter = new FilterWithSpaceAdapter<String>(getContext(),android.R.layout.simple_list_item_1, llistaBicicletesScooters);
+        adapter = new FilterWithSpaceAdapter<>(getContext(),android.R.layout.simple_list_item_1, llistaBicicletesScooters);
         acArticleNou.setThreshold(1);
         acArticleNou.setAdapter(adapter);
+
+        mostrarDades();
+
+        //per triar dates i hores
+        Calendar calendarNow = Calendar.getInstance();
+
+        datePicker = DatePickerDialog.newInstance(
+                InventariVeureAfegirLloguer.this,
+                calendarNow.get(Calendar.YEAR),
+                calendarNow.get(Calendar.MONTH),
+                calendarNow.get(Calendar.DAY_OF_MONTH)
+        );
+
+        timePicker = TimePickerDialog.newInstance(
+                InventariVeureAfegirLloguer.this,
+                calendarNow.get(Calendar.HOUR),
+                calendarNow.get(Calendar.MINUTE),
+                true
+        );
+
+
+        //per strDataFi l'AutoCompleteTextView
+        googleApiClient = new GoogleApiClient.Builder(getContext())
+                .addApi(Places.GEO_DATA_API)
+                .enableAutoManage(getActivity(), 0, this)
+                .addConnectionCallbacks(this)
+                .build();
+
+        acLlocEntrega.setThreshold(3);
+        acLlocEntrega.setOnItemClickListener(autocompleteClickListener);
+
+        acLlocRecollida.setThreshold(3);
+        acLlocRecollida.setOnItemClickListener(autocompleteClickListener);
+
+
+        //el primer item de la llista sempre serà "A la botiga"
+        //això està definit dins la classe PlaceArrayAdapter
+        placesArrayAdapter = new PlaceArrayAdapter(getContext(), android.R.layout.simple_list_item_1, BOUNDS, null);
+        acLlocRecollida.setAdapter(placesArrayAdapter);
+        acLlocEntrega.setAdapter(placesArrayAdapter);
 
 
         btTornarEnrere.setOnClickListener(this);
         btAfegirArticle.setOnClickListener(this);
+        btRealitzarAccio.setOnClickListener(this);
+        contenidorDataInici.setOnClickListener(this);
+        contenidorDataFi.setOnClickListener(this);
 
         btTornarEnrere.setOnTouchListener(Utilitats.onTouchListener(btTornarEnrere));
         btRealitzarAccio.setOnTouchListener(Utilitats.onTouchListener(btRealitzarAccio));
@@ -110,10 +220,11 @@ public class InventariVeureAfegirLloguer extends Fragment implements View.OnClic
 //-- fi onCreateView() -----------------------------------------------------------------------------
 
     /**
-     * Enllaça les variables View amb la seva vista corresponent a l'arxiu XML
+     * Enllaça les variables View amb la seva vista corresponent strDataFi l'arxiu XML
      */
     private void inicialitzarViews() {
 
+        titol                   = view.findViewById(R.id.titol);
         btTornarEnrere          = view.findViewById(R.id.tornar_enrere);
         btRealitzarAccio        = view.findViewById(R.id.realitzar_accio);
 
@@ -132,39 +243,81 @@ public class InventariVeureAfegirLloguer extends Fragment implements View.OnClic
         tvPreu                  = view.findViewById(R.id.preu_lloguer);
 
         llistaArticles          = view.findViewById(R.id.llista_articles_llogar);
-        ultimaFilaAfegirArticle = (ConstraintLayout) LayoutInflater.from(getContext()).inflate(R.layout.row_inventari_llista_lloguer_afegir, llistaArticles, false);
+        layoutAfegirArticle = view.findViewById(R.id.ultim_row);
 
-        btAfegirArticle         = ultimaFilaAfegirArticle.findViewById(R.id.bt_afegir_article);
-        acArticleNou            = ultimaFilaAfegirArticle.findViewById(R.id.autocomplete_article_afegir);
+        btAfegirArticle         = view.findViewById(R.id.bt_afegir_article);
+        acArticleNou            = view.findViewById(R.id.autocomplete_article_afegir);
     }
 
+
+    private void guardarOEditar() {
+        if (NOU_LLOGUER || lloguerEditat)  guardarLloguer();
+        else editarLloguer();
+    }
 
 
     /**
      * Mira si estem creant un lloguer o veient un i, depenent de quin dels dos sigui,
      * habilita i deshabilita vistes diferents
      */
-    private void desactivarViews() {
+    private void mostrarDades() {
 
         if (NOU_LLOGUER) {
+            Date dateAvui = new Date();
+            strDataInici = new SimpleDateFormat("yyyy-MM-dd").format(dateAvui);
+            strDataFi = strDataInici;
+            strHoraInici = "00:00:00";
+            strHoraFi = strHoraFi;
+
+
             btRealitzarAccio.setText("Guardar");
-            ultimaFilaAfegirArticle.setVisibility(VISIBLE);
+            layoutAfegirArticle.setVisibility(VISIBLE);
             acArticleNou.setVisibility(GONE);
             tvPreu.setVisibility(GONE);
 
+            if (venimDesdeDisponibilitat) {
+
+                mostrarDadesInicials();
+
+                acArticleNou.setVisibility(VISIBLE);
+                acArticleNou.setText(articleInicial);
+                afegirArticleAlLloguer();
+            }
         }
         else {
+            titol.setText("Vista lloguer");
             btRealitzarAccio.setText("Editar");
+
             acClient.setFocusableInTouchMode(false);
             acLlocEntrega.setFocusableInTouchMode(false);
             acLlocRecollida.setFocusableInTouchMode(false);
-            ultimaFilaAfegirArticle.setVisibility(GONE);
+            layoutAfegirArticle.setVisibility(GONE);
             tvPreu.setVisibility(VISIBLE);
+
+            connexio.mostrarBicicletesLloguer(llistaArticles, lloguerActual.getId());
+            connexio.mostrarScootersLloguer(llistaArticles, lloguerActual.getId());
+            mostrarDadesInicials();
         }
     }
 
 //--------------------------------------------------------------------------------------------------
 
+
+    private void mostrarDadesInicials() {
+        tvPreu.setText("Preu: " + String.format("%.2f", lloguerActual.getPreu()) + "€");
+        tvDataInici.setText(Utilitats.getDia(lloguerActual.getDataInici()));
+        tvHoraInici.setText(Utilitats.getHora(lloguerActual.getDataInici()));
+        tvDataFi.setText(Utilitats.getDia(lloguerActual.getDataFi()));
+        tvHoraFi.setText(Utilitats.getHora(lloguerActual.getDataFi()));
+    }
+
+
+//--------------------------------------------------------------------------------------------------
+
+
+    /**
+     * Afegeix un article nou strDataFi la llista d'articles que es volen llogar
+     */
     private void afegirArticleAlLloguer() {
 
         if (acArticleNou.getVisibility() == GONE) {
@@ -179,21 +332,38 @@ public class InventariVeureAfegirLloguer extends Fragment implements View.OnClic
                 TextView idArticle              = filaArticle.findViewById(R.id.id_article);
                 TextView nomArticle             = filaArticle.findViewById(R.id.marca_model_article);
 
-                idArticle.setText(acArticleNou.getText().toString().split(" - ")[0]);
-                nomArticle.setText(acArticleNou.getText().toString().split(" - ")[1]);
+                final String article = acArticleNou.getText().toString();
+                idArticle.setText(article.split(" - ")[0]);
+                nomArticle.setText(article.split(" - ")[1]);
 
 
-                ConstraintLayout aux = ultimaFilaAfegirArticle;
+                final List<String> llistaAfegir;
+
+                if (article.charAt(article.length()-1)==' ') {
+                    llistaAfegir = llistaBicicletesLlogades;
+                    String aux = nomArticle.getText().toString();
+                    nomArticle.setText(aux.substring(0, aux.length()-1));
+                }
+                else {
+                    llistaAfegir = llistaScootersLlogats;
+                }
+
+
                 acArticleNou.setText("");
-                llistaArticles.removeViewAt(llistaArticles.getChildCount()-1);
                 llistaArticles.addView(filaArticle);
-                llistaArticles.addView(aux);
 
+                adapter.remove(article);
+                adapter.notifyDataSetInvalidated();
+
+                llistaAfegir.add(article.split( " - ")[0]);
 
                 btEliminarArticle.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         llistaArticles.removeView(filaArticle);
+                        llistaAfegir.remove(article.split(" - ")[0]);
+                        adapter.add(article);
+                        adapter.notifyDataSetChanged();
                     }
                 });
             }
@@ -203,7 +373,7 @@ public class InventariVeureAfegirLloguer extends Fragment implements View.OnClic
 
     /**
      * Comprova si l'article triat compleix els requisits per poder llogar-se. Els requisits són:
-     * - Ha d'existir a la base de dades
+     * - Ha d'existir strDataFi la base de dades
      * - No ha d'estar buit
      * @return <code>true</code> si l'article compleix els requisits
      */
@@ -214,32 +384,249 @@ public class InventariVeureAfegirLloguer extends Fragment implements View.OnClic
             return false;
         }
 
-
         return true;
     }
 
+
     /**
-     * Si estem veient un lloguer, torna a la pantalla anterior ("LLOGUERS").
+     * Si estem veient un lloguer, torna strDataFi la pantalla anterior ("LLOGUERS").
      * Si estem creant o editant un lloguer, comprova si es compleixen els requisists per tornar enrere
-     * (especificats a la funció <code>potTornarEnrere</code>).
+     * (especificats strDataFi la funció <code>potTornarEnrere</code>).
      * Si compleix els requisits, mostra un missatge de confirmació per sortir i, si no, mostra un missatge
      * informant de l'error.
      */
     private void tornarEnrere() {
-        getFragmentManager().beginTransaction()
-                .replace(R.id.frameLayout, new InventariLloguersVentes())
-                .commit();
+        if (NOU_LLOGUER || lloguerEditat) {
+            LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+
+            View dview = inflater.inflate(R.layout.popup_confirmacio, null);
+
+            final Dialog dialog = new Dialog(getContext());
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            dialog.setContentView(dview);
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+
+            dialog.show();
+
+
+            Button btCancelar = (Button) dview.findViewById(R.id.cancelar);
+            Button btAcceptar = (Button) dview.findViewById(R.id.acceptar);
+
+            btCancelar.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dialog.dismiss();
+                }
+            });
+
+
+            btAcceptar.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    //Tenca la connexió amb Google API
+                    googleApiClient.stopAutoManage(getActivity());
+                    googleApiClient.disconnect();
+
+                    getFragmentManager().popBackStack(); //perquè no es vagin acumulant fragments
+
+                    getFragmentManager().beginTransaction()
+                            .replace(R.id.frameLayout, new InventariLloguersVentes())
+                            .commit();
+
+                    //MainActivity.canviarPestaña(idPestaña);
+
+                    dialog.dismiss();
+                }
+            });
+        }
+        else {
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.frameLayout, new InventariLloguersVentes())
+                    .commit();
+        }
+    }
+
+//-- guardar lloguer -------------------------------------------------------------------------------
+
+    private void guardarLloguer() {
+        lloguerActual.setDataInici(strDataInici + " " + strHoraInici);
+        lloguerActual.setDataFi(strDataFi + " " + strHoraFi);
+        lloguerActual.setClient("Sense client");
+        lloguerActual.setLlocRecollida(acLlocRecollida.getText().toString());
+        lloguerActual.setLlocEntrega(acLlocEntrega.getText().toString());
+        //lloguerActual.setPreu();
+
+        if (potGuardar()) {
+            connexio.comprovarBicicletesScootersDisponibles(llistaBicicletesLlogades, llistaScootersLlogats, lloguerActual.getDataInici(), lloguerActual.getDataFi());
+        }
     }
 
 
-//-------------------------------------------------------------------------------------------------
+    private boolean potGuardar() {
+
+        if (llistaArticles.getChildCount() == 0) {
+            motiuErrorGuardar = "no has triat cap article.";
+            return false;
+        }
+
+        if (acClient.getText().toString().equals(null) || acClient.getText().toString().equals("")) {
+            motiuErrorGuardar = "no has triat cap client.";
+        }
+
+        return true;
+    }
+
+//-- editar lloguer --------------------------------------------------------------------------------
+
+    private void editarLloguer() {
+        lloguerEditat = true;
+        btRealitzarAccio.setText("Guardar");
+        acClient.setFocusableInTouchMode(true);
+        acLlocEntrega.setFocusableInTouchMode(true);
+        acLlocRecollida.setFocusableInTouchMode(true);
+        layoutAfegirArticle.setVisibility(VISIBLE);
+    }
+
+//-- Triar data i hora -----------------------------------------------------------------------------
+
+    /**
+     * Què fer quan llistaBicicletesLlogades'ha triat una hora per el recordatori
+     * @param view Dialog on es mostra el Timepicker
+     * @param hourOfDay Hora triada (0-24)
+     * @param minute Minuts triats (0-60)
+     * @param second Segons triats. Sempre és "0"
+     */
+    @Override
+    public void onTimeSet(TimePickerDialog view, int hourOfDay, int minute, int second) {
+
+        //horaModificada  = true;
+
+        String strHora = (hourOfDay < 10) ? "0" + String.valueOf(hourOfDay) : String.valueOf(hourOfDay);
+        String strMinuts = (minute < 10) ? "0" + String.valueOf(minute) : String.valueOf(minute);
+        String strSegons = (second < 10) ? "0" + String.valueOf(second) : String.valueOf(second);
+
+
+        if (timePicker.getTag().equals("inici")) {
+            tvHoraInici.setText(strHora + ":" + strMinuts);
+            strHoraInici = strHora + ":" + strMinuts + ":" + strSegons;
+        }
+        else {
+            tvHoraFi.setText(strHora + ":" + strMinuts);
+            strHoraFi = strHora + ":" + strMinuts + ":" + strSegons;
+        }
+    }
+
+
+
+    /**
+     * Què fer quan llistaBicicletesLlogades'ha triat una data per el recordatori
+     * @param view Dialog on es mostra el DatePicker
+     * @param year Any triat
+     * @param monthOfYear Més triat, amb índex 0 (0-11)
+     * @param dayOfMonth Día del mes triat (0-31 depenent del mes)
+     */
+    @Override
+    public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
+
+        String mes = Utilitats.getNomMes(++monthOfYear);
+        String data;
+
+        //per poder-ho comparar amb la data actual, el camp "mes" ha de tenir dos dígits
+        if (monthOfYear<10) data = year + "-0" + monthOfYear + "-" + dayOfMonth;
+        else data = year + "-" + monthOfYear + "-" + dayOfMonth; //format que es guardarà strDataFi la base de dades
+
+
+        String aux = data;
+
+        //per saber si la data triada és la data actual ("Avui")
+        if (data.equals(new SimpleDateFormat("yyyy-MM-dd").format(new Date()))) {
+            data = "Avui";
+        }
+        else {
+            data = dayOfMonth + " " + mes + " del " + year;
+        }
+
+
+        //indica si estem canviant la data d'inici o la de fi del lloguer
+        if (datePicker.getTag().equals("inici")) {
+            strDataInici = aux;
+            tvDataInici.setText(data);
+        }
+        else {
+            strDataFi = aux;
+            tvDataFi.setText(data);
+        }
+
+        //després de triar una data, automáticament llistaBicicletesLlogades'obre un PopUp per triar una hora
+        timePicker.show(getActivity().getFragmentManager(), datePicker.getTag());
+    }
+
+
+//-- Per strDataFi l'AutoCompleteTextView ------------------------------------------------------------------
+
+    private AdapterView.OnItemClickListener autocompleteClickListener = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+            final PlaceArrayAdapter.PlaceAutocomplete item = placesArrayAdapter.getItem(position);
+            final String placeId = String.valueOf(item.placeId);
+
+            PendingResult<PlaceBuffer> placeResult = Places.GeoDataApi.getPlaceById(googleApiClient, placeId);
+            placeResult.setResultCallback(updatePlaceDetailsCallback);
+        }
+    };
+
+
+    private ResultCallback<PlaceBuffer> updatePlaceDetailsCallback = new ResultCallback<PlaceBuffer>() {
+        @Override
+        public void onResult(PlaceBuffer places) {
+            if (!places.getStatus().isSuccess()) return;
+        }
+    };
+
+//-- Necessaris per strDataFi Google Places API ------------------------------------------------------------
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        placesArrayAdapter.setGoogleApiClient(googleApiClient);
+    }
+
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {}
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        placesArrayAdapter.setGoogleApiClient(null);
+    }
+
+
+
+//--------------------------------------------------------------------------------------------------
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.tornar_enrere: tornarEnrere();  break;
             case R.id.bt_afegir_article: afegirArticleAlLloguer(); break;
+            case R.id.realitzar_accio: guardarOEditar(); break;
+
+            case R.id.contenidor_data_hora_inici: datePicker.show(getActivity().getFragmentManager(), "inici"); break;
+            case R.id.contenidor_data_hora_fi: datePicker.show(getActivity().getFragmentManager(), "fi"); break;
 
         }
+    }
+
+//-- Cicle de vida del fragment --------------------------------------------------------------------
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        //Tenca la connexió amb Google API
+        googleApiClient.stopAutoManage(getActivity());
+        googleApiClient.disconnect();
     }
 }

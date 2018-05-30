@@ -122,7 +122,7 @@ public class InventariDetallArticle extends Fragment {
 
         Picasso.get().load(ConnexioDades.SERVIDOR + articleActual.getId() + ".jpg").fit().centerInside().into(fotoAmpliada);
 
-        //perquè quan es fagi click a qualsevol part de la imatge, el popup es tenqui
+        //perquè quan es fagi click strDataFi qualsevol part de la imatge, el popup es tenqui
         dummyLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -184,7 +184,7 @@ public class InventariDetallArticle extends Fragment {
 
     private boolean potGuardar() {
 
-        String primeraLiniaError = "No s'ha pogut guardar l'article,";
+        String primeraLiniaError = "No llistaBicicletesLlogades'ha pogut guardar l'article,";
 
         if (nomArticle.getText().toString().equals(null) || nomArticle.getText().toString().equals("")) {
             Utilitats.mostrarMissatgeError(getContext(), primeraLiniaError, "el títol no pot estar buit.");

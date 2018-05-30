@@ -27,6 +27,7 @@ import com.airbnb.lottie.LottieAnimationView;
 import com.example.dana.projectefinal.ConnexioDades;
 import com.example.dana.projectefinal.MainActivity;
 import com.example.dana.projectefinal.Objectes;
+import com.example.dana.projectefinal.PlaceArrayAdapter;
 import com.example.dana.projectefinal.R;
 import com.example.dana.projectefinal.Utilitats;
 import com.google.android.gms.common.ConnectionResult;
@@ -226,12 +227,11 @@ public class AgendaVeureAfegirRecordatori extends Fragment implements DatePicker
 
             try {
                 Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(recordatoriActual.getData());
-                horaRecordatori = new SimpleDateFormat("HH:mm").format(date);
                 dataRecordatori = new SimpleDateFormat("yyyy-MM-dd").format(date);
+                horaRecordatori = Utilitats.getHora(recordatoriActual.getData());
 
-                int numeroMes = Integer.parseInt(new SimpleDateFormat("MM").format(date));
 
-                tvData.setText(new SimpleDateFormat("dd").format(date) + " " + Utilitats.getNomMes(numeroMes));
+                tvData.setText(Utilitats.getDia(recordatoriActual.getData()));
                 tvHora.setText(horaRecordatori);
             } catch (Exception ignored) {}
 
@@ -429,7 +429,7 @@ public class AgendaVeureAfegirRecordatori extends Fragment implements DatePicker
      * @param idPestaña Pestaña a la que es vol canviar
      */
     private void tornarEnrere(final int idPestaña) {
-        if (recordatoriEditat) {
+        if (NOU_RECORDATORI || recordatoriEditat) {
             LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
 

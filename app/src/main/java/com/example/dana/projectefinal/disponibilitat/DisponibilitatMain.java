@@ -3,6 +3,7 @@ package com.example.dana.projectefinal.disponibilitat;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -234,11 +235,13 @@ public class DisponibilitatMain extends Fragment implements DatePickerDialog.OnD
 
         if (rbBicicleta.isChecked()) {
             layoutResposta.setVisibility(VISIBLE);
-            connexio.comprovarDisponibilitatBicicleta(textLlogat, btLlogar, animationView, idArticle, strDataInici + " " + strHoraInici, strDataFi + " " + strHoraFi);
+            connexio.comprovarDisponibilitatBicicleta(getActivity().getSupportFragmentManager(), textLlogat, btLlogar,
+                    animationView, nomArticle.getText().toString(), strDataInici + " " + strHoraInici, strDataFi + " " + strHoraFi);
         }
         else {
             layoutResposta.setVisibility(VISIBLE);
-            connexio.comprovarDisponibilitatScooter(textLlogat, btLlogar, animationView, idArticle, strDataInici + " " + strHoraInici, strDataFi + " " + strHoraFi);
+            connexio.comprovarDisponibilitatScooter(getActivity().getSupportFragmentManager(), textLlogat, btLlogar, animationView,
+                    nomArticle.getText().toString(), strDataInici + " " + strHoraInici, strDataFi + " " + strHoraFi);
         }
     }
 
@@ -285,24 +288,7 @@ public class DisponibilitatMain extends Fragment implements DatePickerDialog.OnD
     @Override
     public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
 
-        String mes = null;
-        monthOfYear++; //tenen index 0
-
-        switch (monthOfYear) {
-            case 1: mes  =  "gener";    break;
-            case 2: mes  =  "febrer";   break;
-            case 3: mes  =  "març";     break;
-            case 4: mes  =  "abril";    break;
-            case 5: mes  =  "maig";     break;
-            case 6: mes  =  "juny";     break;
-            case 7: mes  =  "juliol";   break;
-            case 8: mes  =  "agost";    break;
-            case 9: mes  =  "setembre"; break;
-            case 10: mes =  "octubre";  break;
-            case 11: mes =  "novembre"; break;
-            case 12: mes =  "desembre"; break;
-        }
-
+        String mes = Utilitats.getNomMes(++monthOfYear);
 
         String aux;
         //per poder-ho comparar amb la data actual, el camp "mes" ha de tenir dos dígits

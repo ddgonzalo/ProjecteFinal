@@ -115,22 +115,61 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
+                    <android.support.constraint.ConstraintLayout
+                        android:id="@+id/ultim_row"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginStart="8dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/llista_articles_llogar">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/autocomplete_article_afegir"
+                            android:layout_width="250dp"
+                            android:layout_height="wrap_content"
+                            android:textSize="17sp"
+                            android:visibility="visible"
+                            app:layout_constraintBaseline_toBaselineOf="@+id/bt_afegir_article"
+                            app:layout_constraintStart_toStartOf="parent"
+                            tools:text="Article afegir" />
+
+                        <TextView
+                            android:id="@+id/bt_afegir_article"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="8dp"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginStart="8dp"
+                            android:drawablePadding="4dp"
+                            android:drawableStart="@drawable/ic_endavant"
+                            android:fontFamily="@font/sf_pro_display_bold"
+                            android:text="Afegir article"
+                            android:textColor="@color/negre"
+                            android:textSize="17sp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toEndOf="@+id/autocomplete_article_afegir" />
+                    </android.support.constraint.ConstraintLayout>
+
                     <TextView
                         android:id="@+id/preu_lloguer"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
-                        android:layout_marginEnd="16dp"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginTop="16dp"
+                        android:layout_marginBottom="16dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginStart="8dp"
                         android:fontFamily="@font/sf_pro_display_medium"
                         android:text="Preu lloguer: 100€"
                         android:textColor="@color/negre"
                         android:textSize="17sp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/llista_articles_llogar"
+                        app:layout_constraintTop_toBottomOf="@+id/ultim_row"
                         tools:text="Preu lloguer: 100€" />
 
                     <TextView

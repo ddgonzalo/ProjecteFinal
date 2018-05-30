@@ -131,4 +131,89 @@ public class Objectes {
         public int getTotalArticles() {return totalArticles;}
         public void setTotalArticles(int totalArticles) {this.totalArticles = totalArticles;}
     }
+
+
+    public static class Client {
+        private String dni;
+        private String nom;
+        private String dataNaixement;
+        private String telefon;
+        private String movil;
+        private String correu;
+        private String adreça;
+        private String poblacio;
+        private String codiPostal;
+
+        public String getDni() {
+            return dni;
+        }
+
+        public void setDni(String dni) {
+            this.dni = dni;
+        }
+
+        public String getNom() {
+            return nom;
+        }
+
+        public void setNom(String nom) {
+            this.nom = nom;
+        }
+
+        public String getDataNaixement() {
+            return dataNaixement;
+        }
+
+        public void setDataNaixement(String dataNaixement) {
+            this.dataNaixement = dataNaixement;
+        }
+
+        public String getTelefon() {
+            return telefon;
+        }
+
+        public void setTelefon(String telefon) {
+            this.telefon = telefon;
+        }
+
+        public String getMovil() {
+            return movil;
+        }
+
+        public void setMovil(String movil) {
+            this.movil = movil;
+        }
+
+        public String getCorreu() {
+            return correu;
+        }
+
+        public void setCorreu(String correu) {
+            this.correu = correu;
+        }
+
+        public String getAdreça() {
+            return adreça;
+        }
+
+        public void setAdreça(String adreça) {
+            this.adreça = adreça;
+        }
+
+        public String getPoblacio() {
+            return poblacio;
+        }
+
+        public void setPoblacio(String poblacio) {
+            this.poblacio = poblacio;
+        }
+
+        public String getCodiPostal() {
+            return codiPostal;
+        }
+
+        public void setCodiPostal(String codiPostal) {
+            this.codiPostal = codiPostal;
+        }
+    }
 }

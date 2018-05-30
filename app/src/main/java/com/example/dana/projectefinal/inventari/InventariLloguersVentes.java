@@ -18,6 +18,7 @@ public class InventariLloguersVentes extends Fragment {
     ImageButton btTornarEnrere, btAfegirLloguer;
     LinearLayout llistaEnCurs, llistaPendents, llistaFinalitzats;
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.inventari_lloguers_ventes, null);
@@ -37,7 +38,7 @@ public class InventariLloguersVentes extends Fragment {
         btTornarEnrere.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getFragmentManager().popBackStack(); //perquè no es vagin acumulant fragments
+                //getFragmentManager().popBackStack(); //perquè no es vagin acumulant fragments
 
                 getFragmentManager().beginTransaction()
                         .replace(R.id.frameLayout, new InventariMain())
@@ -48,7 +49,7 @@ public class InventariLloguersVentes extends Fragment {
         btAfegirLloguer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getFragmentManager().popBackStack(); //perquè no es vagin acumulant fragments
+                //getFragmentManager().popBackStack(); //perquè no es vagin acumulant fragments
 
                 getFragmentManager().beginTransaction()
                         .replace(R.id.frameLayout, new InventariVeureAfegirLloguer())

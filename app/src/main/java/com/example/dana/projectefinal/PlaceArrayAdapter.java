@@ -1,4 +1,4 @@
-package com.example.dana.projectefinal.agenda;
+package com.example.dana.projectefinal;
 
 import android.content.Context;
 import android.widget.ArrayAdapter;
@@ -132,7 +132,7 @@ public class PlaceArrayAdapter extends ArrayAdapter<PlaceArrayAdapter.PlaceAutoc
     }
 
 
-    class PlaceAutocomplete {
+    public class PlaceAutocomplete {
 
         public CharSequence placeId;
         public CharSequence description;

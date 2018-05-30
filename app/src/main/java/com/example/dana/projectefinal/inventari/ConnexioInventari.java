@@ -2,8 +2,10 @@ package com.example.dana.projectefinal.inventari;
 
 import android.content.Context;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -27,6 +29,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+
+import okhttp3.internal.Util;
+
+import static android.view.View.GONE;
 
 public class ConnexioInventari {
 
@@ -60,6 +66,7 @@ public class ConnexioInventari {
      * amb les dades de lloguers en curs, pendents o finalitzats, respectivament.
      */
     public void carregarDades() {
+
         if (primeraVegada) {
             llistaLloguersEnCurs = new LinkedList<>();
             llistaLloguersPendents = new LinkedList<>();
@@ -73,7 +80,7 @@ public class ConnexioInventari {
         }
     }
 
-
+//-- lloguers --------------------------------------------------------------------------------------
 
     /**
      * Carrega una de les llistes <code>llistaLloguersEnCurs</code>, <code>llistaLloguersPendents</code> o <code>llistaLlloguersFinalitzats</code>
@@ -126,7 +133,7 @@ public class ConnexioInventari {
 
     /**
      * Mostra per pantalla una llista de lloguers en curs, pendents o finalitzats
-     * @param fragmentManager Fragment Manager per canviar de fragment quan es fa click a un lloguer
+     * @param fragmentManager Fragment Manager per canviar de fragment quan es fa click strDataFi un lloguer
      * @param estat "enCurs", "pendents" o "finalitzats"
      * @param llistaLloguers LinearLayout on es mostraran els lloguers
      */
@@ -137,7 +144,7 @@ public class ConnexioInventari {
         else if (estat.equals("pendents")) llista = llistaLloguersPendents;
         else if (estat.equals("finalitzats")) llista = llistaLloguersFinalitzats;
 
-        for (Objectes.Lloguer lloguer : llista) {
+        for (final Objectes.Lloguer lloguer : llista) {
             try {
 
                 View fila = LayoutInflater.from(context).inflate(R.layout.row_inventari_lloguers, llistaLloguers, false);
@@ -146,15 +153,9 @@ public class ConnexioInventari {
                 TextView dataLloguer = fila.findViewById(R.id.data_lloguer);
                 TextView articlesLloguer = fila.findViewById(R.id.articles_lloguer);
 
+                String dataInici = Utilitats.getDia(lloguer.getDataInici()) + ", " + Utilitats.getHora(lloguer.getDataInici());
 
-                Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(lloguer.getDataInici());
-                int mes = Integer.parseInt(new SimpleDateFormat("MM").format(date));
-                String dataInici = new SimpleDateFormat("dd").format(date) + " " + Utilitats.getNomMes(mes) + ", " + new SimpleDateFormat("HH:mm").format(date);
-
-                date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(lloguer.getDataFi());
-                mes = Integer.parseInt(new SimpleDateFormat("MM").format(date));
-                String dataFi = new SimpleDateFormat("dd").format(date) + " " + Utilitats.getNomMes(mes) + ", " + new SimpleDateFormat("HH:mm").format(date);
-
+                String dataFi = Utilitats.getDia(lloguer.getDataFi()) + ", " + Utilitats.getHora(lloguer.getDataFi());
                 idLloguer.setText("ID " + lloguer.getId());
 
                 if (lloguer.getTotalArticles()==1) articlesLloguer.setText("(" + lloguer.getTotalArticles() + " article)");
@@ -171,7 +172,7 @@ public class ConnexioInventari {
                     @Override
                     public void onClick(View view) {
                         fragmentManager.beginTransaction()
-                                .replace(R.id.frameLayout, new InventariVeureAfegirLloguer())
+                                .replace(R.id.frameLayout, new InventariVeureAfegirLloguer(lloguer))
                                 .addToBackStack(null)
                                 .commit();
                     }
@@ -183,7 +184,205 @@ public class ConnexioInventari {
 
 
     /**
-     * Actualitza les dades d'un article existent a la base de dades
+     * Mostra per pantalla una llista de les bicicletes que s'han llogat en un lloguer concret.
+     * @param llistaArticles LinearLayout on es mostrarà la llista de bicicletes
+     * @param idLloguer ID del lloguer en el que s'han llogat les bicicletes
+     */
+    public void mostrarBicicletesLloguer (final LinearLayout llistaArticles, String idLloguer) {
+        final JsonArrayRequest jsonRequest = new JsonArrayRequest(Request.Method.GET, URL_LLOGUERS + "?bicisLloguer=" + idLloguer, null,
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+
+                        for (int i=0; i<response.length(); i++) {
+                            try {
+                                JSONObject jsonObject = response.getJSONObject(i);
+
+                                final View fila = LayoutInflater.from(context).inflate(R.layout.row_inventari_vista_lloguer, llistaArticles, false);
+
+                                ImageButton btEliminarArticle   = fila.findViewById(R.id.eliminar_article);
+                                TextView idArticle              = fila.findViewById(R.id.id_article);
+                                TextView nomArticle             = fila.findViewById(R.id.marca_model_article);
+
+                                idArticle.setText(jsonObject.getString("idBicicleta"));
+                                nomArticle.setText(jsonObject.getString("marca") + " " + jsonObject.getString("model"));
+
+                                btEliminarArticle.setVisibility(GONE);
+
+                                btEliminarArticle.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        llistaArticles.removeView(fila);
+                                    }
+                                });
+
+
+                                llistaArticles.addView(fila);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                },
+
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        error.printStackTrace();
+                    }
+                });
+
+        queue.add(jsonRequest);
+    }
+
+
+    /**
+     * Mostra per pantalla una llista dels scooters que s'han llogat en un lloguer concret.
+     * @param llistaArticles LinearLayout on es mostrarà la llista d'scooters
+     * @param idLloguer ID del lloguer en el que s'han llogat els scooters
+     */
+    public void mostrarScootersLloguer(final LinearLayout llistaArticles, String idLloguer) {
+        final JsonArrayRequest jsonRequest = new JsonArrayRequest(Request.Method.GET, URL_LLOGUERS + "?scootersLloguer=" + idLloguer, null,
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+
+                        for (int i=0; i<response.length(); i++) {
+                            try {
+                                JSONObject jsonObject = response.getJSONObject(i);
+
+                                final View fila = LayoutInflater.from(context).inflate(R.layout.row_inventari_vista_lloguer, llistaArticles, false);
+
+                                ImageButton btEliminarArticle   = fila.findViewById(R.id.eliminar_article);
+                                TextView idArticle              = fila.findViewById(R.id.id_article);
+                                TextView nomArticle             = fila.findViewById(R.id.marca_model_article);
+
+                                idArticle.setText(jsonObject.getString("idScooter"));
+                                nomArticle.setText(jsonObject.getString("marca") + " " + jsonObject.getString("model"));
+
+                                btEliminarArticle.setVisibility(GONE);
+
+
+                                llistaArticles.addView(fila);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                },
+
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        error.printStackTrace();
+                    }
+                });
+
+        queue.add(jsonRequest);
+    }
+
+
+    /**
+     * Comprova si les bicicletes que es volen llogar estan disponibles per el període de temps triat i,
+     * si ho estan, comprova si els scooters estan disponibles.
+     * En cas de que algun article ja esitgui llogat per aquell període de temps, mostra un popup
+     * per pantalla informant de l'error.
+     * @param bicicletesQueEsVolenLlogar Llista amb els IDs de les bicicletes que es volen llogar
+     * @param scootersQueEsVolenLlogar Llista amb els IDs dels scooters que es volen llogar
+     * @param dataInici Data d'inici del lloguer en format "yyyy-MM-dd HH:mm:ss"
+     * @param dataFi Data de fi del lloguer en format "yyyy-MM-dd HH:mm:ss"
+     */
+    public void comprovarBicicletesScootersDisponibles(final List<String> bicicletesQueEsVolenLlogar, final List<String> scootersQueEsVolenLlogar, final String dataInici, final String dataFi) {
+        String url = URL_LLOGUERS + "?comprovarDisponibilitatBicis=1&dataInici=" + dataInici + "&dataFi=" + dataFi;
+        final JsonArrayRequest jsonRequest = new JsonArrayRequest(Request.Method.GET, url, null,
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+
+                        //Llista de les bicicletes llogades entre "dataInici" i "dataFi"
+                        List<String> bicicletesLlogades = new LinkedList<>();
+                        for (int i=0; i<response.length(); i++) {
+                            try {
+                                JSONObject jsonObject = response.getJSONObject(i);
+                                bicicletesLlogades.add(jsonObject.getString("idBicicleta"));
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                        //Mira si alguna de les bicicletes que volem llogar és una de les bicicletes que ja estan llogades
+                        for (String bicicletaQueEsVol : bicicletesQueEsVolenLlogar) {
+                            if (bicicletesLlogades.contains(bicicletaQueEsVol)) {
+                                Utilitats.mostrarMissatgeError(context, "La bicicleta \"" + bicicletaQueEsVol + "\" no està disponible per aquest període,",
+                                        "si us plau, elimina-la de la llista.");
+                                return;
+                            }
+                        }
+
+                        comprovarScootersDisponibles(scootersQueEsVolenLlogar, dataInici, dataFi);
+                    }
+                },
+
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        error.printStackTrace();
+                    }
+                });
+
+        queue.add(jsonRequest);
+    }
+
+
+    /**
+     * Comprova si els scooters que es volen llogar estan disponibles per el període de temps triat.
+     * @param scootersQueEsVolenLlogar Llista amb els IDs dels scooters que es volen llogar
+     * @param dataInici Data d'inici del lloguer en format "yyyy-MM-dd HH:mm:ss"
+     * @param dataFi Data de fi del lloguer en format "yyyy-MM-dd HH:mm:ss"
+     */
+    private void comprovarScootersDisponibles(final List<String> scootersQueEsVolenLlogar, String dataInici, String dataFi) {
+        String url = URL_LLOGUERS + "?comprovarDisponibilitatScooters=1&dataInici=" + dataInici + "&dataFi=" + dataFi;
+        final JsonArrayRequest jsonRequest = new JsonArrayRequest(Request.Method.GET, url, null,
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+
+                        //Llista dels scooters llogats entre "dataInici" i "dataFi"
+                        List<String> scootersLlogats = new LinkedList<>();
+                        for (int i=0; i<response.length(); i++) {
+                            try {
+                                JSONObject jsonObject = response.getJSONObject(i);
+                                scootersLlogats.add(jsonObject.getString("idScooter"));
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                        //Mira si algun dels scooters que volem llogar és un dels scooters que ja estan llogats
+                        for (String scooterQueEsVol : scootersQueEsVolenLlogar) {
+                            if (scootersLlogats.contains(scooterQueEsVol)) {
+                                Utilitats.mostrarMissatgeError(context, "L'scooter \"" + scooterQueEsVol + "\" no està disponible per aquest període,",
+                                        "si us plau, elimina'l de la llista.");
+                                return;
+                            }
+                        }
+                    }
+                },
+
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        error.printStackTrace();
+                    }
+                });
+
+        queue.add(jsonRequest);
+    }
+
+//--------------------------------------------------------------------------------------------------
+
+    /**
+     * Actualitza les dades d'un article existent strDataFi la base de dades
      * @param article Article actualitzat
      * @param esBicicleta <code>true</code> si l'article és una bicicleta, <code>false</code> si és un scooter
      */

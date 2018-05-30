@@ -3,12 +3,16 @@ package com.example.dana.projectefinal;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.TextView;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class Utilitats {
 
@@ -102,6 +106,56 @@ public class Utilitats {
         };
 
         return listener;
+    }
+
+
+    /**
+     * Retorna una data en format "dd nomMes yyyy", a partir d'una data en format "yyyy-MM-dd HH:mm:ss".
+     * Si la data està mostrant el dia d'avui, retorna "Avui"
+     * @param data Data en format "yyyy-MM-dd HH:mm:ss"
+     * @return Data en format "dd nomMes" o "Avui"
+     */
+    public static String getDia(String data) {
+        String dataNova = "";
+
+
+
+        try {
+            Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(data);
+
+
+            String dataAux = new SimpleDateFormat("yyyy-MM-dd").format(date);
+
+            if (dataAux.equals(new SimpleDateFormat("yyyy-MM-dd").format(new Date()))){
+                dataNova = "Avui";
+            }
+            else {
+
+                int numeroMes = Integer.parseInt(new SimpleDateFormat("MM").format(date));
+
+                dataNova = new SimpleDateFormat("dd").format(date) + " " + getNomMes(numeroMes);
+            }
+
+        } catch (Exception ignored) {}
+
+        return dataNova;
+    }
+
+    /**
+     * Extreu l'hora d'una data en concret
+     * @param data Data en format "yyyy-MM-dd HH:mm:ss"
+     * @return Hora en format "HH:mm"
+     */
+    public static String getHora(String data) {
+        Log.i("HORAPLS", "GETHORA --" + data + "--");
+        String hora = "";
+
+        try {
+            Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(data);
+            hora = new SimpleDateFormat("HH:mm").format(date);
+        } catch (Exception ignored) {}
+
+        return hora;
     }
 
 }

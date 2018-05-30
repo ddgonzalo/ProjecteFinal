@@ -4,6 +4,7 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 
 import com.example.dana.projectefinal.agenda.ConnexioAgenda;
@@ -25,18 +26,24 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
     static BottomNavigationViewEx  bottomNavigation;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ConnexioDades conn = new ConnexioDades(this);
-
+        //-- Carregar les dades ----
+        ConnexioDades conn = new ConnexioDades(this); //perquè les bicicletes i scooters estiguin disponibles a totes les classes
 
         ConnexioAgenda connAgenda = new ConnexioAgenda(this);
         connAgenda.carregarDades();
+
         ConnexioInventari connInventari = new ConnexioInventari(this);
         connInventari.carregarDades();
+
+        ConnexioClients connClients = new ConnexioClients(this);
+        connClients.carregarDades();
+
 
         bottomNavigation = (BottomNavigationViewEx) findViewById(R.id.bnve);
 
@@ -55,7 +62,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         agendaPotTornareEnrere = true;
         tornarEnrere = true;
         itemAnterior = bottomNavigation.getSelectedItemId();
-
     }
 
 //-- fi onCreate() ---------------------------------------------------------------------------------
@@ -63,37 +69,35 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
 
-
         //EventBus.getDefault().post("sortir " + bottomNavigation.getMenuItemPosition(item));
 
-            Fragment fragment = null;
+        Fragment fragment = null;
 
-            switch (item.getItemId()) {
-                case R.id.action_inici:
-                    fragment = new FragmentInici();
-                    break;
+        switch (item.getItemId()) {
+            case R.id.action_inici:
+                fragment = new FragmentInici();
+                break;
 
-                case R.id.action_agenda:
-                    fragment = new AgendaMain();
-                    break;
+            case R.id.action_agenda:
+                fragment = new AgendaMain();
+                break;
 
-                case R.id.action_disponibilitat:
-                    fragment = new DisponibilitatMain();
-                    break;
+            case R.id.action_disponibilitat:
+                fragment = new DisponibilitatMain();
+                break;
 
-                case R.id.action_inventari:
-                    fragment = new InventariMain();
-                    break;
+            case R.id.action_inventari:
+                fragment = new InventariMain();
+                break;
 
-                case R.id.action_settings:
-                    fragment = new FragmentSettings();
-                    break;
-            }
+            case R.id.action_settings:
+                fragment = new FragmentSettings();
+                break;
+        }
 
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.frameLayout, fragment)
-                    .commit();
-
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.frameLayout, fragment)
+                .commit();
 
         return true;
     }
@@ -118,11 +122,13 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         if (count==0) super.onBackPressed();
     }
 
-    @Override
+
+    /*@Override
     public void onStart() {
         super.onStart();
         EventBus.getDefault().register(MainActivity.this); //comença a rebre notificacions de l'EventBus
     }
+
 
     @Override
     public void onPause() {
@@ -143,8 +149,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         if (missatge.contains("cambiar pestaña")) {
             int pestañaId = Integer.parseInt(missatge.substring("cambiar pestaña  ".length()-1, missatge.length()-1));
-            onNavigationItemSelected(bottomNavigation.getMenu().findItem(pestañaId));
-        }
-    }
-
+    onNavigationItemSelected(bottomNavigation.getMenu().findItem(pestañaId));
+}
+    }*/
 }

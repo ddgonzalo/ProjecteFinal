@@ -28,7 +28,7 @@ import static com.android.volley.Request.*;
 
 public class ConnexioDades {
 
-    public static String SERVIDOR = "http://10.0.2.2/";
+    public static String SERVIDOR = "http://192.168.1.16/";
 
     private static RequestQueue queue;
 

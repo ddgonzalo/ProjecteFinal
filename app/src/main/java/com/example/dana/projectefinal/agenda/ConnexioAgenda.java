@@ -36,6 +36,8 @@ import java.util.List;
 
 import android.support.v4.app.FragmentManager;
 
+import okhttp3.internal.Util;
+
 public class ConnexioAgenda {
     private static boolean primeraVegada = true;
     private static RequestQueue queue;
@@ -156,9 +158,7 @@ public class ConnexioAgenda {
 
                 final Recordatori rec = llista.get(i);
 
-
-                Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(rec.getData());
-                String horaRecordatori = new SimpleDateFormat("HH:mm").format(date);
+                String horaRecordatori = Utilitats.getHora(rec.getData());
 
                 View fila = LayoutInflater.from(context).inflate(R.layout.row_agenda, llistaRecordatoris, false);
 
@@ -176,14 +176,10 @@ public class ConnexioAgenda {
                 //Si els recordatoris que es mostren són els de els próxims 7 dies o els d'aquest mes,
                 //s'ha d'indicar de quin dia es tracta (no només la hora)
                 if (quan.equals("setmana") || quan.equals("mes")) {
-                    int mesRecordatori = Integer.parseInt(new SimpleDateFormat("MM").format(date));
 
-                    String mesRecordatoriStr = Utilitats.getNomMes(mesRecordatori);
-
-                    String dataRecordatori = new SimpleDateFormat("dd").format(date) + " " + mesRecordatoriStr + ", ";
-                    dataRecordatori += new SimpleDateFormat("HH:mm").format(date);
-
+                    String dataRecordatori = Utilitats.getDia(rec.getData()) + ", " + horaRecordatori;
                     hora.setText(dataRecordatori);
+
                 } else hora.setText(horaRecordatori);
 
 
@@ -316,14 +312,8 @@ public class ConnexioAgenda {
                                 rec.setUbicacio(jsonObject.getString("ubicacio"));
                                 rec.setTipusRecordatori(nomEtiqueta);
 
-                                Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(rec.getData());
 
-                                int mesRecordatori = Integer.parseInt(new SimpleDateFormat("MM").format(date));
-
-                                String mesRecordatoriStr = Utilitats.getNomMes(mesRecordatori);
-
-                                String dataRecordatori = new SimpleDateFormat("dd").format(date) + " " + mesRecordatoriStr + ", ";
-                                dataRecordatori += new SimpleDateFormat("HH:mm").format(date);
+                                String dataRecordatori = Utilitats.getDia(rec.getData()) + ", " + Utilitats.getHora(rec.getData());
 
                                 View fila = LayoutInflater.from(context).inflate(R.layout.row_agenda, llistaRecordatoris, false);
 

@@ -64,7 +64,7 @@ public class AdapterInventariRow extends BaseAdapter {
         holder.nomArticle.setText(article.split("-")[1]);
 
 
-        //quan es fa click a un article, s'obre una altra pantalla mostrant els detalls d'aquest
+        //quan es fa click strDataFi un article, llistaBicicletesLlogades'obre una altra pantalla mostrant els detalls d'aquest
         convertView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
