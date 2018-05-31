@@ -1,6 +1,7 @@
 package com.example.dana.projectefinal;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -34,6 +35,8 @@ public class ConnexioClients {
         if (primeraVegada) {
             llistaClients = new HashMap<>();
             carregarClients();
+
+            primeraVegada = false;
         }
     }
 
@@ -42,30 +45,31 @@ public class ConnexioClients {
                 new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray response) {
-                        try {
-                            JSONObject jsonObject = response.getJSONObject(0);
+                        for (int i = 0; i < response.length(); i++) {
+                            try {
+                                JSONObject jsonObject = response.getJSONObject(i);
 
-                            Objectes.Client client = new Objectes.Client();
-                            client.setDni(jsonObject.getString("dni"));
-                            client.setNom(jsonObject.getString("nom"));
-                            client.setDataNaixement(jsonObject.getString("dataNaixement"));
-                            client.setTelefon(jsonObject.getString("telefon"));
-                            client.setMovil(jsonObject.getString("movil"));
-                            client.setCorreu(jsonObject.getString("correu"));
-                            client.setAdreça(jsonObject.getString("adreça"));
-                            client.setPoblacio(jsonObject.getString("poblacio"));
-                            client.setCodiPostal(jsonObject.getString("codiPostal"));
+                                Objectes.Client client = new Objectes.Client();
+                                client.setDni(jsonObject.getString("dni"));
+                                client.setNom(jsonObject.getString("nom"));
+                                client.setDataNaixement(jsonObject.getString("dataNaixement"));
+                                client.setTelefon(jsonObject.getString("telefon"));
+                                client.setMovil(jsonObject.getString("movil"));
+                                client.setCorreu(jsonObject.getString("correu"));
+                                client.setAdreça(jsonObject.getString("adreça"));
+                                client.setPoblacio(jsonObject.getString("poblacio"));
+                                client.setCodiPostal(jsonObject.getString("codiPostal"));
 
-                            llistaClients.put(client.getDni(), client);
+                                llistaClients.put(client.getDni(), client);
 
-                        } catch (Exception ignored) {}
+                            } catch (Exception ignored) {}
+                        }
                     }
                 },
 
                 new Response.ErrorListener() {
                     @Override
-                    public void onErrorResponse(VolleyError error) {
-                    }
+                    public void onErrorResponse(VolleyError error) {}
                 });
 
         queue.add(jsonRequest);

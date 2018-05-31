@@ -1,10 +1,15 @@
 package com.example.dana.projectefinal.inventari;
 
+import android.app.Dialog;
 import android.content.Context;
+import android.graphics.drawable.ColorDrawable;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -25,14 +30,11 @@ import com.google.gson.Gson;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import okhttp3.internal.Util;
-
 import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 
 public class ConnexioInventari {
 
@@ -44,6 +46,7 @@ public class ConnexioInventari {
     final static String SERVIDOR = ConnexioDades.SERVIDOR;
     final static String URL_INVENTARI = SERVIDOR + "inventari.php";
     final static String URL_LLOGUERS = SERVIDOR + "lloguers.php";
+    final static String URL_AFEGIR_LLOGUER = SERVIDOR + "guardar_lloguer.php";
 
     public static List<Objectes.Lloguer> llistaLloguersEnCurs;
     public static List<Objectes.Lloguer> llistaLloguersPendents;
@@ -147,7 +150,7 @@ public class ConnexioInventari {
         for (final Objectes.Lloguer lloguer : llista) {
             try {
 
-                View fila = LayoutInflater.from(context).inflate(R.layout.row_inventari_lloguers, llistaLloguers, false);
+                View fila = LayoutInflater.from(context).inflate(R.layout.row_lloguers, llistaLloguers, false);
 
                 TextView idLloguer = fila.findViewById(R.id.id_lloguer);
                 TextView dataLloguer = fila.findViewById(R.id.data_lloguer);
@@ -198,7 +201,7 @@ public class ConnexioInventari {
                             try {
                                 JSONObject jsonObject = response.getJSONObject(i);
 
-                                final View fila = LayoutInflater.from(context).inflate(R.layout.row_inventari_vista_lloguer, llistaArticles, false);
+                                final View fila = LayoutInflater.from(context).inflate(R.layout.row_lloguers_articles, llistaArticles, false);
 
                                 ImageButton btEliminarArticle   = fila.findViewById(R.id.eliminar_article);
                                 TextView idArticle              = fila.findViewById(R.id.id_article);
@@ -251,7 +254,7 @@ public class ConnexioInventari {
                             try {
                                 JSONObject jsonObject = response.getJSONObject(i);
 
-                                final View fila = LayoutInflater.from(context).inflate(R.layout.row_inventari_vista_lloguer, llistaArticles, false);
+                                final View fila = LayoutInflater.from(context).inflate(R.layout.row_lloguers_articles, llistaArticles, false);
 
                                 ImageButton btEliminarArticle   = fila.findViewById(R.id.eliminar_article);
                                 TextView idArticle              = fila.findViewById(R.id.id_article);
@@ -287,13 +290,10 @@ public class ConnexioInventari {
      * si ho estan, comprova si els scooters estan disponibles.
      * En cas de que algun article ja esitgui llogat per aquell període de temps, mostra un popup
      * per pantalla informant de l'error.
-     * @param bicicletesQueEsVolenLlogar Llista amb els IDs de les bicicletes que es volen llogar
-     * @param scootersQueEsVolenLlogar Llista amb els IDs dels scooters que es volen llogar
-     * @param dataInici Data d'inici del lloguer en format "yyyy-MM-dd HH:mm:ss"
-     * @param dataFi Data de fi del lloguer en format "yyyy-MM-dd HH:mm:ss"
+     * @param lloguer Llista amb els IDs dels scooters que es volen llogar
      */
-    public void comprovarBicicletesScootersDisponibles(final List<String> bicicletesQueEsVolenLlogar, final List<String> scootersQueEsVolenLlogar, final String dataInici, final String dataFi) {
-        String url = URL_LLOGUERS + "?comprovarDisponibilitatBicis=1&dataInici=" + dataInici + "&dataFi=" + dataFi;
+    public void guardarLloguer(final FragmentManager fragmentManager, final Objectes.Lloguer lloguer, final TextView tvPreu) {
+        String url = URL_LLOGUERS + "?comprovarDisponibilitatBicis=1&dataInici=" + lloguer.getDataInici() + "&dataFi=" + lloguer.getDataFi();
         final JsonArrayRequest jsonRequest = new JsonArrayRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONArray>() {
                     @Override
@@ -311,7 +311,7 @@ public class ConnexioInventari {
                         }
 
                         //Mira si alguna de les bicicletes que volem llogar és una de les bicicletes que ja estan llogades
-                        for (String bicicletaQueEsVol : bicicletesQueEsVolenLlogar) {
+                        for (String bicicletaQueEsVol : lloguer.getLlistaBicicletes()) {
                             if (bicicletesLlogades.contains(bicicletaQueEsVol)) {
                                 Utilitats.mostrarMissatgeError(context, "La bicicleta \"" + bicicletaQueEsVol + "\" no està disponible per aquest període,",
                                         "si us plau, elimina-la de la llista.");
@@ -319,7 +319,7 @@ public class ConnexioInventari {
                             }
                         }
 
-                        comprovarScootersDisponibles(scootersQueEsVolenLlogar, dataInici, dataFi);
+                        comprovarScootersDisponibles(fragmentManager, lloguer, tvPreu);
                     }
                 },
 
@@ -336,12 +336,10 @@ public class ConnexioInventari {
 
     /**
      * Comprova si els scooters que es volen llogar estan disponibles per el període de temps triat.
-     * @param scootersQueEsVolenLlogar Llista amb els IDs dels scooters que es volen llogar
-     * @param dataInici Data d'inici del lloguer en format "yyyy-MM-dd HH:mm:ss"
-     * @param dataFi Data de fi del lloguer en format "yyyy-MM-dd HH:mm:ss"
+     * @param lloguer Llista amb els IDs dels scooters que es volen llogar
      */
-    private void comprovarScootersDisponibles(final List<String> scootersQueEsVolenLlogar, String dataInici, String dataFi) {
-        String url = URL_LLOGUERS + "?comprovarDisponibilitatScooters=1&dataInici=" + dataInici + "&dataFi=" + dataFi;
+    private void comprovarScootersDisponibles(final FragmentManager fragmentManager, final Objectes.Lloguer lloguer, final TextView tvPreu) {
+        String url = URL_LLOGUERS + "?comprovarDisponibilitatScooters=1&dataInici=" + lloguer.getDataInici() + "&dataFi=" + lloguer.getDataFi();
         final JsonArrayRequest jsonRequest = new JsonArrayRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONArray>() {
                     @Override
@@ -359,13 +357,16 @@ public class ConnexioInventari {
                         }
 
                         //Mira si algun dels scooters que volem llogar és un dels scooters que ja estan llogats
-                        for (String scooterQueEsVol : scootersQueEsVolenLlogar) {
+                        for (String scooterQueEsVol : lloguer.getLlistaScooters()) {
                             if (scootersLlogats.contains(scooterQueEsVol)) {
                                 Utilitats.mostrarMissatgeError(context, "L'scooter \"" + scooterQueEsVol + "\" no està disponible per aquest període,",
                                         "si us plau, elimina'l de la llista.");
                                 return;
                             }
                         }
+
+                        calcularPreuLloguer(fragmentManager, lloguer, tvPreu);
+
                     }
                 },
 
@@ -379,6 +380,121 @@ public class ConnexioInventari {
         queue.add(jsonRequest);
     }
 
+
+
+    public void calcularPreuLloguer(final FragmentManager fragmentManager, final Objectes.Lloguer lloguer, final TextView tvPreu) {
+        long diferenciaHores = Utilitats.diferenciaEntreDates(lloguer.getDataInici(), lloguer.getDataFi());
+
+        Gson gson = new Gson();
+        final String lloguerJson = gson.toJson(lloguer);
+
+        String url = URL_AFEGIR_LLOGUER + "?calcularPreu=" + lloguerJson + "&diferenciaHores=" + diferenciaHores;
+
+        StringRequest string_request = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        lloguer.setPreu(Double.parseDouble(response));
+                        tvPreu.setVisibility(VISIBLE);
+                        tvPreu.setText("Preu: " + response + "€");
+
+                        mostrarMissatgeConfirmacioGuardarLloguer(fragmentManager, lloguer);
+                    }
+                },
+
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        error.printStackTrace();
+                    }
+                }
+        );
+
+        queue.add(string_request);
+    }
+
+
+    private void mostrarMissatgeConfirmacioGuardarLloguer(final FragmentManager fragmentManager, final Objectes.Lloguer lloguer) {
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+
+        View dview = inflater.inflate(R.layout.popup_confirmacio, null);
+
+        final Dialog dialog = new Dialog(context);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(dview);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+
+        dialog.show();
+
+
+        TextView titol          = dview.findViewById(R.id.titol);
+        TextView primeraLinia   = dview.findViewById(R.id.primera_linia);
+        TextView segonaLinia    = dview.findViewById(R.id.segona_linia);
+        Button btCancelar       = (Button) dview.findViewById(R.id.cancelar);
+        Button btAcceptar       = (Button) dview.findViewById(R.id.acceptar);
+
+
+        titol.setText("Realitzar lloguer");
+        primeraLinia.setText("El preu final del lloguer és de " + String.format("%.2f",lloguer.getPreu()) + "€,");
+        segonaLinia.setText("confirmeu que voleu continuar?");
+
+        btCancelar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+
+
+        btAcceptar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+                totalitzarLloguer(fragmentManager, lloguer);
+            }
+        });
+    }
+
+
+    private void totalitzarLloguer(final FragmentManager fragmentManager, Objectes.Lloguer lloguer) {
+        Gson gson = new Gson();
+        final String lloguerJson = gson.toJson(lloguer);
+
+        String url = URL_AFEGIR_LLOGUER + "?nouLloguer=" + lloguerJson;
+
+
+        StringRequest string_request = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        llistaLloguersEnCurs.clear();
+                        llistaLloguersPendents.clear();
+                        llistaLloguersFinalitzats.clear();
+
+                        carregarLloguers("enCurs");
+                        carregarLloguers("pendents");
+                        carregarLloguers("finalitzats");
+
+
+                        fragmentManager.popBackStack(); //perquè no es vagin acumulant fragments
+
+                        fragmentManager.beginTransaction()
+                                .replace(R.id.frameLayout, new InventariLloguersVentes())
+                                .commit();
+                    }
+                },
+
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        error.printStackTrace();
+                    }
+                }
+        );
+
+        queue.add(string_request);
+    }
 //--------------------------------------------------------------------------------------------------
 
     /**

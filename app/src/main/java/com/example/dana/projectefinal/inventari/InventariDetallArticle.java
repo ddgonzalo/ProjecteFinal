@@ -16,11 +16,15 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.dana.projectefinal.ConnexioDades;
+import com.example.dana.projectefinal.MainActivity;
 import com.example.dana.projectefinal.Objectes;
 import com.example.dana.projectefinal.R;
 import com.example.dana.projectefinal.Utilitats;
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.squareup.picasso.Picasso;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class InventariDetallArticle extends Fragment {
     View view;
@@ -28,7 +32,7 @@ public class InventariDetallArticle extends Fragment {
     String strIdArticle;
 
     ImageButton btTornarEnrere;
-    Button btEditarGuardar;
+    Button btEditarGuardar, btLlogar;
 
     ImageView fotoArticle;
     TextView idArticle, nomArticle;
@@ -56,6 +60,21 @@ public class InventariDetallArticle extends Fragment {
         }
 
 
+        btLlogar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                MainActivity.canviarPestaña(3);
+                getFragmentManager().popBackStack();
+
+                String dataInici = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+                String dataFi = dataInici;
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.frameLayout, new InventariVeureAfegirLloguer(true, strIdArticle + " - " + articleActual.getMarca() + " " + articleActual.getModel(), dataInici, dataFi))
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
 
         btTornarEnrere.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -92,6 +111,7 @@ public class InventariDetallArticle extends Fragment {
     private void inicialitzarViews() {
         btTornarEnrere      = (ImageButton) view.findViewById(R.id.tornar_enrere);
         btEditarGuardar     = (Button) view.findViewById(R.id.editar_article);
+        btLlogar            = (Button) view.findViewById(R.id.bt_llogar);
 
         fotoArticle         = (ImageView) view.findViewById(R.id.imatge_article);
         idArticle           = (TextView) view.findViewById(R.id.id_article);

@@ -1,4 +1,4 @@
-package com.example.dana.projectefinal;
+package com.example.dana.projectefinal.inici;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import com.example.dana.projectefinal.R;
 import com.example.dana.projectefinal.agenda.ConnexioAgenda;
 
 public class FragmentInici extends Fragment {

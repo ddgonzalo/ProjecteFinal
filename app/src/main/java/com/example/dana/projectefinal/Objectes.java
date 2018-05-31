@@ -1,5 +1,8 @@
 package com.example.dana.projectefinal;
 
+import java.util.LinkedList;
+import java.util.List;
+
 public class Objectes {
 
     public static class Recordatori {
@@ -103,9 +106,11 @@ public class Objectes {
         private String dataFi;
         private String llocEntrega;
         private String llocRecollida;
-        private String client;
+        private String client = "null";
         private double preu;
         private int totalArticles;
+        private List<String> llistaBicicletes = new LinkedList<>();
+        private List<String> llistaScooters = new LinkedList<>();
 
         public String getId() {return id;}
         public void setId(String id) {this.id = id;}
@@ -130,6 +135,12 @@ public class Objectes {
 
         public int getTotalArticles() {return totalArticles;}
         public void setTotalArticles(int totalArticles) {this.totalArticles = totalArticles;}
+
+        public List<String> getLlistaBicicletes() {return llistaBicicletes;}
+        public void setLlistaBicicletes(List<String> llistaBicicletes) {this.llistaBicicletes = llistaBicicletes;}
+
+        public List<String> getLlistaScooters() {return llistaScooters;}
+        public void setLlistaScooters(List<String> llistaScooters) {this.llistaScooters = llistaScooters;}
     }
 
 

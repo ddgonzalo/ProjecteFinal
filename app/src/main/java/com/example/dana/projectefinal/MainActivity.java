@@ -4,18 +4,15 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 
 import com.example.dana.projectefinal.agenda.ConnexioAgenda;
 import com.example.dana.projectefinal.agenda.AgendaMain;
 import com.example.dana.projectefinal.disponibilitat.DisponibilitatMain;
+import com.example.dana.projectefinal.inici.FragmentInici;
 import com.example.dana.projectefinal.inventari.ConnexioInventari;
 import com.example.dana.projectefinal.inventari.InventariMain;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
-
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
 
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
 

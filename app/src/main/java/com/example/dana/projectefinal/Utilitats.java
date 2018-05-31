@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 public class Utilitats {
 
@@ -156,6 +157,24 @@ public class Utilitats {
         } catch (Exception ignored) {}
 
         return hora;
+    }
+
+
+    public static long diferenciaEntreDates(String data1, String data2) {
+        long diferencia = 0;
+
+        SimpleDateFormat myFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        try {
+            Date date1 = myFormat.parse(data1);
+            Date date2 = myFormat.parse(data2);
+            long diff = date2.getTime() - date1.getTime();
+            diferencia = TimeUnit.HOURS.convert(diff, TimeUnit.MILLISECONDS);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return diferencia;
     }
 
 }

@@ -7,12 +7,14 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.RadioButton;
 
 import com.example.dana.projectefinal.ConnexioDades;
+import com.example.dana.projectefinal.MainActivity;
 import com.example.dana.projectefinal.Objectes;
 import com.example.dana.projectefinal.R;
 import com.example.dana.projectefinal.Utilitats;
@@ -61,8 +63,6 @@ public class InventariVeureLlistaArticles extends Fragment {
                 veureScooters();
             }
         });
-
-
 
         btTornarEnrere.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -118,7 +118,7 @@ public class InventariVeureLlistaArticles extends Fragment {
                 temp.clear(); //cada vez que se escribe/borra, la lista de vendedores va cambiando
 
                 for (String v : llistaBicicletes) {
-                    //Se puede buscar por nomArticle o código de vendedor
+                    //Se puede buscar por nomClient o código de vendedor
                     if (textLength <= v.length()) {
                         if (v.toLowerCase().contains(charSequence.toString().toLowerCase())) {
                             temp.add(v);
@@ -155,7 +155,7 @@ public class InventariVeureLlistaArticles extends Fragment {
                 temp.clear(); //cada vez que se escribe/borra, la lista de vendedores va cambiando
 
                 for (String v : llistaScooters) {
-                    //Se puede buscar por nomArticle o código de vendedor
+                    //Se puede buscar por nomClient o código de vendedor
                     if (textLength <= v.length()) {
                         if (v.toLowerCase().contains(charSequence.toString().toLowerCase())) {
                             temp.add(v);

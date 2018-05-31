@@ -242,7 +242,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <AutoCompleteTextView
+                <TextView
                     android:id="@+id/client"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -411,7 +411,7 @@
                     android:drawableEnd="@drawable/ic_endavant"
                     android:drawablePadding="4dp"
                     android:fontFamily="@font/sf_pro_display_light"
-                    android:text="00:00"
+                    android:text="09:00"
                     android:textColor="@color/gris"
                     android:textSize="17sp"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -475,7 +475,7 @@
                     android:drawableEnd="@drawable/ic_endavant"
                     android:drawablePadding="4dp"
                     android:fontFamily="@font/sf_pro_display_light"
-                    android:text="00:00"
+                    android:text="10:00"
                     android:textColor="@color/gris"
                     android:textSize="17sp"
                     app:layout_constraintEnd_toEndOf="parent"

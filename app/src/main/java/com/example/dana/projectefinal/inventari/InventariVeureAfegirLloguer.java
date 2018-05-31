@@ -7,6 +7,8 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,10 +16,13 @@ import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 
+import com.example.dana.projectefinal.ConnexioClients;
 import com.example.dana.projectefinal.ConnexioDades;
 import com.example.dana.projectefinal.FilterWithSpaceAdapter;
 import com.example.dana.projectefinal.Objectes;
@@ -36,6 +41,7 @@ import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
@@ -52,7 +58,6 @@ public class InventariVeureAfegirLloguer extends Fragment implements View.OnClic
 
     //variables per si venim de "DISPONIBILITAT" després d'haver comprovat si un article estava disponible
     boolean venimDesdeDisponibilitat;
-    boolean articleInicialEsBici;
     String articleInicial;
 
     Objectes.Lloguer lloguerActual;
@@ -63,9 +68,9 @@ public class InventariVeureAfegirLloguer extends Fragment implements View.OnClic
     ImageButton btTornarEnrere;
     Button btRealitzarAccio;
 
-    ConstraintLayout contenidorDataInici, contenidorDataFi;
-    TextView tvDataInici, tvHoraInici, tvDataFi, tvHoraFi, tvPreu;
-    AutoCompleteTextView acClient, acLlocEntrega, acLlocRecollida;
+    ConstraintLayout contenidorDataInici, contenidorDataFi, contenidorClient;
+    TextView tvDataInici, tvHoraInici, tvDataFi, tvHoraFi, tvPreu, tvClient;
+    AutoCompleteTextView acLlocEntrega, acLlocRecollida;
 
     LinearLayout llistaArticles;
     ConstraintLayout layoutAfegirArticle;
@@ -76,9 +81,9 @@ public class InventariVeureAfegirLloguer extends Fragment implements View.OnClic
     FilterWithSpaceAdapter<String> adapter;
     List<String> llistaBicicletesScooters;
 
-    List<String> llistaBicicletesLlogades, llistaScootersLlogats;
+    //List<String> llistaBicicletesLlogades, llistaScootersLlogats;
 
-    String strDataInici, strDataFi, strHoraInici, strHoraFi;
+    String strDataInici, strDataFi, strHoraInici, strHoraFi, strDniClient;
 
     TimePickerDialog timePicker;
     DatePickerDialog datePicker;
@@ -137,7 +142,7 @@ public class InventariVeureAfegirLloguer extends Fragment implements View.OnClic
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.inventari_afegir_lloguer, null);
+        view = inflater.inflate(R.layout.lloguers_afegir_lloguer, null);
         connexio = new ConnexioInventari(getContext());
 
         inicialitzarViews();
@@ -146,8 +151,8 @@ public class InventariVeureAfegirLloguer extends Fragment implements View.OnClic
 
         //Es podrà afegir qualsevol article, sigui bicicleta o scooter
         llistaBicicletesScooters = new LinkedList<>();
-        llistaBicicletesLlogades = new LinkedList<>();
-        llistaScootersLlogats = new LinkedList<>();
+        //llistaBicicletesLlogades = new LinkedList<>();
+        //llistaScootersLlogats = new LinkedList<>();
 
         for (Integer idBici : ConnexioDades.magatzemBicis.keySet()) {
             Objectes.Article bici =  ConnexioDades.llistaBicicletes.get(ConnexioDades.magatzemBicis.get(idBici));
@@ -209,6 +214,7 @@ public class InventariVeureAfegirLloguer extends Fragment implements View.OnClic
         btRealitzarAccio.setOnClickListener(this);
         contenidorDataInici.setOnClickListener(this);
         contenidorDataFi.setOnClickListener(this);
+        contenidorClient.setOnClickListener(this);
 
         btTornarEnrere.setOnTouchListener(Utilitats.onTouchListener(btTornarEnrere));
         btRealitzarAccio.setOnTouchListener(Utilitats.onTouchListener(btRealitzarAccio));
@@ -230,13 +236,14 @@ public class InventariVeureAfegirLloguer extends Fragment implements View.OnClic
 
         contenidorDataInici     = view.findViewById(R.id.contenidor_data_hora_inici);
         contenidorDataFi        = view.findViewById(R.id.contenidor_data_hora_fi);
+        contenidorClient        = view.findViewById(R.id.contenidor_client);
 
         tvDataInici             = view.findViewById(R.id.data_inici);
         tvHoraInici             = view.findViewById(R.id.hora_inici);
         tvDataFi                = view.findViewById(R.id.data_fi);
         tvHoraFi                = view.findViewById(R.id.hora_fi);
 
-        acClient                = view.findViewById(R.id.client);
+        tvClient                = view.findViewById(R.id.client);
         acLlocEntrega           = view.findViewById(R.id.lloc_entrega);
         acLlocRecollida         = view.findViewById(R.id.lloc_recollida);
 
@@ -266,8 +273,8 @@ public class InventariVeureAfegirLloguer extends Fragment implements View.OnClic
             Date dateAvui = new Date();
             strDataInici = new SimpleDateFormat("yyyy-MM-dd").format(dateAvui);
             strDataFi = strDataInici;
-            strHoraInici = "00:00:00";
-            strHoraFi = strHoraFi;
+            strHoraInici = "09:00:00";
+            strHoraFi = "10:00:00";
 
 
             btRealitzarAccio.setText("Guardar");
@@ -287,8 +294,9 @@ public class InventariVeureAfegirLloguer extends Fragment implements View.OnClic
         else {
             titol.setText("Vista lloguer");
             btRealitzarAccio.setText("Editar");
+            btRealitzarAccio.setVisibility(GONE);
 
-            acClient.setFocusableInTouchMode(false);
+            tvClient.setFocusableInTouchMode(false);
             acLlocEntrega.setFocusableInTouchMode(false);
             acLlocRecollida.setFocusableInTouchMode(false);
             layoutAfegirArticle.setVisibility(GONE);
@@ -296,6 +304,7 @@ public class InventariVeureAfegirLloguer extends Fragment implements View.OnClic
 
             connexio.mostrarBicicletesLloguer(llistaArticles, lloguerActual.getId());
             connexio.mostrarScootersLloguer(llistaArticles, lloguerActual.getId());
+
             mostrarDadesInicials();
         }
     }
@@ -304,6 +313,10 @@ public class InventariVeureAfegirLloguer extends Fragment implements View.OnClic
 
 
     private void mostrarDadesInicials() {
+
+        tvClient.setText(lloguerActual.getClient().equals("null") ? "Sense client" :
+                ConnexioClients.llistaClients.get(lloguerActual.getClient()).getNom() + " (" + lloguerActual.getClient() + ")");
+
         tvPreu.setText("Preu: " + String.format("%.2f", lloguerActual.getPreu()) + "€");
         tvDataInici.setText(Utilitats.getDia(lloguerActual.getDataInici()));
         tvHoraInici.setText(Utilitats.getHora(lloguerActual.getDataInici()));
@@ -326,7 +339,7 @@ public class InventariVeureAfegirLloguer extends Fragment implements View.OnClic
         }
         else {
             if (potAfegirArticle()) {
-                final View filaArticle = LayoutInflater.from(getContext()).inflate(R.layout.row_inventari_vista_lloguer, llistaArticles, false);
+                final View filaArticle = LayoutInflater.from(getContext()).inflate(R.layout.row_lloguers_articles, llistaArticles, false);
 
                 ImageButton btEliminarArticle   = filaArticle.findViewById(R.id.eliminar_article);
                 TextView idArticle              = filaArticle.findViewById(R.id.id_article);
@@ -340,12 +353,12 @@ public class InventariVeureAfegirLloguer extends Fragment implements View.OnClic
                 final List<String> llistaAfegir;
 
                 if (article.charAt(article.length()-1)==' ') {
-                    llistaAfegir = llistaBicicletesLlogades;
+                    llistaAfegir = lloguerActual.getLlistaBicicletes();
                     String aux = nomArticle.getText().toString();
                     nomArticle.setText(aux.substring(0, aux.length()-1));
                 }
                 else {
-                    llistaAfegir = llistaScootersLlogats;
+                    llistaAfegir = lloguerActual.getLlistaScooters();
                 }
 
 
@@ -448,45 +461,123 @@ public class InventariVeureAfegirLloguer extends Fragment implements View.OnClic
         }
     }
 
+
+
 //-- guardar lloguer -------------------------------------------------------------------------------
 
     private void guardarLloguer() {
         lloguerActual.setDataInici(strDataInici + " " + strHoraInici);
         lloguerActual.setDataFi(strDataFi + " " + strHoraFi);
-        lloguerActual.setClient("Sense client");
         lloguerActual.setLlocRecollida(acLlocRecollida.getText().toString());
         lloguerActual.setLlocEntrega(acLlocEntrega.getText().toString());
-        //lloguerActual.setPreu();
 
         if (potGuardar()) {
-            connexio.comprovarBicicletesScootersDisponibles(llistaBicicletesLlogades, llistaScootersLlogats, lloguerActual.getDataInici(), lloguerActual.getDataFi());
+
+            /* La base de dades comprovarà, en el següent ordre:
+             *    - que totes  les bicicletes que es volen llogar estiguin disponibles per el període triat
+             *    - que tots els scooters que es volen llogar també estiguin disponibles
+             *    - preu total del lloguer
+             * Si tot és correcte, mostrarà un missatge informant del preu del lloguer i la seva totalització.
+             * Si alguna bicicleta o scooter no està disponible, mostrarà un popup per pantalla informant de l'error.*/
+            connexio.guardarLloguer(getActivity().getSupportFragmentManager(), lloguerActual, tvPreu);
+        }
+        else {
+            Utilitats.mostrarMissatgeError(getContext(), "No s'ha pogut realitzar el lloguer,", motiuErrorGuardar);
         }
     }
 
 
     private boolean potGuardar() {
 
-        if (llistaArticles.getChildCount() == 0) {
+        if (lloguerActual.getLlistaBicicletes().isEmpty() && lloguerActual.getLlistaScooters().isEmpty()) {
             motiuErrorGuardar = "no has triat cap article.";
             return false;
         }
 
-        if (acClient.getText().toString().equals(null) || acClient.getText().toString().equals("")) {
-            motiuErrorGuardar = "no has triat cap client.";
-        }
-
         return true;
     }
+
 
 //-- editar lloguer --------------------------------------------------------------------------------
 
     private void editarLloguer() {
         lloguerEditat = true;
         btRealitzarAccio.setText("Guardar");
-        acClient.setFocusableInTouchMode(true);
+        contenidorClient.setFocusableInTouchMode(true);
         acLlocEntrega.setFocusableInTouchMode(true);
         acLlocRecollida.setFocusableInTouchMode(true);
         layoutAfegirArticle.setVisibility(VISIBLE);
+
+        //Permet eliminar els articles
+        for (int i=0; i<llistaArticles.getChildCount(); i++) {
+            ConstraintLayout filaArticle = (ConstraintLayout) llistaArticles.getChildAt(i);
+
+            ImageButton btEliminar = filaArticle.findViewById(R.id.eliminar_article);
+            btEliminar.setVisibility(VISIBLE);
+        }
+    }
+
+
+//-- Triar client ----------------------------------------------------------------------------------
+
+    private void mostrarClients() {
+        LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+
+        View dview = inflater.inflate(R.layout.lloguers_triar_client, null);
+
+        final Dialog dialog = new Dialog(getContext());
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(dview);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+
+        dialog.show();
+
+        EditText buscadorClients    = dview.findViewById(R.id.buscador_client);
+        final ListView listviewClients    = dview.findViewById(R.id.listview_clients);
+
+        final List<String> llistatClients = new LinkedList<>();
+        llistatClients.add("null-");
+        for (String dniClient : ConnexioClients.llistaClients.keySet()) {
+            if (!dniClient.equals("null"))
+                llistatClients.add(dniClient + "-" + ConnexioClients.llistaClients.get(dniClient).getNom());
+        }
+
+
+        //L'adapter de la listview de l'inventari també serveix per aquí, ja que només té un ID (dni), i un nom d'article (nom de client)
+        //Estat inicial de la llista, mostrant tots els clients
+        AdapterClients adapterInicial = new AdapterClients(getContext(), llistatClients, tvClient, dialog, lloguerActual);
+        listviewClients.setAdapter(adapterInicial);
+
+        //Cerca dinàmica de bicicletes
+        final ArrayList<String> temp = new ArrayList<>();
+        final AdapterClients adapter = new AdapterClients(getContext(), temp, tvClient, dialog, lloguerActual);
+
+        buscadorClients.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
+                int textLength = charSequence.length();
+                temp.clear(); //cada vez que se escribe/borra, la lista de vendedores va cambiando
+
+                for (String v : llistatClients) {
+                    //Se puede buscar por nomClient o código de vendedor
+                    if (textLength <= v.length()) {
+                        if (v.toLowerCase().contains(charSequence.toString().toLowerCase())) {
+                            temp.add(v);
+                        }
+                    }
+                }
+
+                listviewClients.setAdapter(adapter);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {}
+        });
     }
 
 //-- Triar data i hora -----------------------------------------------------------------------------
@@ -615,6 +706,8 @@ public class InventariVeureAfegirLloguer extends Fragment implements View.OnClic
 
             case R.id.contenidor_data_hora_inici: datePicker.show(getActivity().getFragmentManager(), "inici"); break;
             case R.id.contenidor_data_hora_fi: datePicker.show(getActivity().getFragmentManager(), "fi"); break;
+
+            case R.id.contenidor_client: mostrarClients(); break;
 
         }
     }
