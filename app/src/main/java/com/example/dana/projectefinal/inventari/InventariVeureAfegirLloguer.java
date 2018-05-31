@@ -25,6 +25,7 @@ import android.widget.TextView;
 import com.example.dana.projectefinal.ConnexioClients;
 import com.example.dana.projectefinal.ConnexioDades;
 import com.example.dana.projectefinal.FilterWithSpaceAdapter;
+import com.example.dana.projectefinal.MainActivity;
 import com.example.dana.projectefinal.Objectes;
 import com.example.dana.projectefinal.R;
 import com.example.dana.projectefinal.Utilitats;
@@ -147,12 +148,8 @@ public class InventariVeureAfegirLloguer extends Fragment implements View.OnClic
 
         inicialitzarViews();
 
-        //llistaArticles.addView(layoutAfegirArticle);
-
         //Es podrà afegir qualsevol article, sigui bicicleta o scooter
         llistaBicicletesScooters = new LinkedList<>();
-        //llistaBicicletesLlogades = new LinkedList<>();
-        //llistaScootersLlogats = new LinkedList<>();
 
         for (Integer idBici : ConnexioDades.magatzemBicis.keySet()) {
             Objectes.Article bici =  ConnexioDades.llistaBicicletes.get(ConnexioDades.magatzemBicis.get(idBici));
@@ -437,7 +434,6 @@ public class InventariVeureAfegirLloguer extends Fragment implements View.OnClic
             btAcceptar.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-
                     //Tenca la connexió amb Google API
                     googleApiClient.stopAutoManage(getActivity());
                     googleApiClient.disconnect();
@@ -448,13 +444,13 @@ public class InventariVeureAfegirLloguer extends Fragment implements View.OnClic
                             .replace(R.id.frameLayout, new InventariLloguersVentes())
                             .commit();
 
-                    //MainActivity.canviarPestaña(idPestaña);
 
                     dialog.dismiss();
                 }
             });
         }
         else {
+            MainActivity.canviarPestaña(3);
             getFragmentManager().beginTransaction()
                     .replace(R.id.frameLayout, new InventariLloguersVentes())
                     .commit();

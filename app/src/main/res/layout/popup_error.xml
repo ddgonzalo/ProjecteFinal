@@ -81,6 +81,7 @@
         android:background="@android:color/transparent"
         android:fontFamily="@font/sf_pro_display_bold"
         android:text="OK"
+        android:textColor="@color/colorPrimary"
         android:textSize="17sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"

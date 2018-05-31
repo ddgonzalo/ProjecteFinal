@@ -8,6 +8,7 @@ import android.view.MenuItem;
 
 import com.example.dana.projectefinal.agenda.ConnexioAgenda;
 import com.example.dana.projectefinal.agenda.AgendaMain;
+import com.example.dana.projectefinal.configuracio.ConfiguracioMain;
 import com.example.dana.projectefinal.disponibilitat.DisponibilitatMain;
 import com.example.dana.projectefinal.inici.FragmentInici;
 import com.example.dana.projectefinal.inventari.ConnexioInventari;
@@ -88,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 break;
 
             case R.id.action_settings:
-                fragment = new FragmentSettings();
+                fragment = new ConfiguracioMain();
                 break;
         }
 

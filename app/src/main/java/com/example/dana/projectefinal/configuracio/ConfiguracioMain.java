@@ -1,4 +1,4 @@
-package com.example.dana.projectefinal;
+package com.example.dana.projectefinal.configuracio;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -6,11 +6,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class FragmentSettings extends Fragment {
+import com.example.dana.projectefinal.R;
+
+public class ConfiguracioMain extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.inici, null);
+        View v = inflater.inflate(R.layout.configuracio, null);
         return v;
     }
 }

@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#ff4081</color>
     <color name="negre">#000000</color>
     <color name="gris">#909090</color>
     <color name="grisClar">#e2e2e2</color>
     <color name="blanc">#FFFFFF</color>
+    <color name="colorPrimary">#8BC34A</color>
+    <color name="colorPrimaryDark">#689F38</color>
+    <color name="primary_light">#DCEDC8</color>
+    <color name="colorAccent">#FFC107</color>
+    <color name="primary_text">#212121</color>
+    <color name="secondary_text">#757575</color>
+    <color name="icons">#212121</color>
+    <color name="divider">#BDBDBD</color>
+    <color name="vermell">#d82b00</color>
+    <color name="vermell_fosc">#b22300</color>
 
 </resources>

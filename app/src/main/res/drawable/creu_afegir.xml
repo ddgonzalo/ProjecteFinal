@@ -8,7 +8,7 @@
             android:pivotY="50%"
             android:toDegrees="90">
             <shape android:shape="line">
-                <stroke android:width="3dp" android:color="@color/negre" />
+                <stroke android:width="3dp" android:color="@color/colorPrimaryDark" />
             </shape>
         </rotate>
     </item>
@@ -19,7 +19,7 @@
             android:pivotY="50%"
             android:toDegrees="0">
             <shape android:shape="line">
-                <stroke android:width="3dp" android:color="@color/negre" />
+                <stroke android:width="3dp" android:color="@color/colorPrimaryDark" />
             </shape>
         </rotate>
     </item>

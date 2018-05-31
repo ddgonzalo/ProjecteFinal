@@ -28,7 +28,7 @@ public class AgendaFiltrarEtiquetes extends Fragment{
         //per a cada etiqueta, afegeix un CardView amb tots els recordatoris que tenen aquesta etiqueta
         for (String nomEtiqueta : ConnexioDades.llistaEtiquetes.keySet()) {
 
-            View cardview = LayoutInflater.from(getContext()).inflate(R.layout.carview_etiquetes, llistaCardviews, false);
+            View cardview = LayoutInflater.from(getContext()).inflate(R.layout.agenda_carview_etiquetes, llistaCardviews, false);
 
             TextView cardviewTitol          = cardview.findViewById(R.id.nom_etiqueta);
             LinearLayout llistaRecordatoris = cardview.findViewById(R.id.llista_agenda);

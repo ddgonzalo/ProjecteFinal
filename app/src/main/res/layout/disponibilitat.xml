@@ -76,6 +76,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:checked="true"
+            android:buttonTint="@color/colorPrimary"
             android:fontFamily="@font/sf_pro_text_light"
             android:text="Un dia"
             android:textSize="17sp" />
@@ -85,21 +86,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:buttonTint="@color/colorPrimary"
             android:fontFamily="@font/sf_pro_text_light"
             android:text="Més d'un dia"
             android:textSize="17sp" />
     </RadioGroup>
 
-    <!--<ViewSwitcher xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/my_switcher"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="32dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/radioGroup">-->
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/disponibilitat_mes_dun_dia"
@@ -361,13 +353,14 @@
 
     <Button
         android:id="@+id/bt_comprovar"
-        android:layout_width="141dp"
-        android:layout_height="wrap_content"
+        android:layout_width="181dp"
+        android:layout_height="44dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginTop="132dp"
-        android:background="@android:color/transparent"
+        android:layout_marginTop="140dp"
+        android:background="@drawable/boto_color"
         android:fontFamily="@font/sf_pro_display_bold"
         android:text="Comprovar disponibilitat"
+        android:textColor="@color/blanc"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/radioGroup" />
 
@@ -389,6 +382,7 @@
             android:checked="true"
             android:fontFamily="@font/sf_pro_display_medium"
             android:text="BICICLETA"
+            android:buttonTint="@color/colorPrimary"
             android:textSize="17sp" />
 
         <RadioButton
@@ -396,6 +390,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:buttonTint="@color/colorPrimary"
             android:fontFamily="@font/sf_pro_display_medium"
             android:text="SCOOTER"
             android:textSize="17sp" />
